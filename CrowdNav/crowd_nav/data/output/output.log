@@ -1,0 +1,8 @@
+2022-03-14 13:57:15, INFO: Current git head hash code: %s
+2022-03-14 13:57:15, INFO: Using device: cpu
+2022-03-14 13:57:15, INFO: Policy: SARL w/ global state
+2022-03-14 13:57:15, INFO: human number: 5
+2022-03-14 13:57:15, INFO: Not randomize human's radius and preferred speed
+2022-03-14 13:57:15, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2022-03-14 13:57:15, INFO: Square width: 10.0, circle width: 4.0
+2022-03-14 13:57:15, INFO: Current learning rate: 0.010000
