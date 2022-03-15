@@ -15,16 +15,16 @@
 virtualenv --python=/usr/bin/python3.6 venv
 source venv/bin/activate
 
-pip install -r ~/Documents/2022-meng/chen/Python-RVO2/requirements.txt
-cd ~/Documents/2022-meng/chen/Python-RVO2/
-python ~/Documents/2022-meng/chen/Python-RVO2/setup.py build
-python ~/Documents/2022-meng/chen/Python-RVO2/setup.py install
+pip install -r ~/Documents/2022-meng/sarl-train/Python-RVO2/requirements.txt
+cd ~/Documents/2022-meng/sarl-train/Python-RVO2/
+python ~/Documents/2022-meng/sarl-train/Python-RVO2/setup.py build
+python ~/Documents/2022-meng/sarl-train/Python-RVO2/setup.py install
 
 
-cd ~/Documents/2022-meng/chen/CrowdNav/
+cd ~/Documents/2022-meng/sarl-train/CrowdNav/
 echo '3'
-yes | pip install -e ~/Documents/2022-meng/chen/CrowdNav/.
+yes | pip install -e ~/Documents/2022-meng/sarl-train/CrowdNav/.
 
-cd ~/Documents/2022-meng/chen/CrowdNav/crowd_nav/
+cd ~/Documents/2022-meng/sarl-train/CrowdNav/crowd_nav/
 echo '4'
-yes Y | python ~/Documents/2022-meng/chen/CrowdNav/crowd_nav/train.py --policy sarl
+yes Y | python ~/Documents/2022-meng/sarl-train/CrowdNav/crowd_nav/train.py --policy sarl
