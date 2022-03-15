@@ -42,3 +42,4 @@ Python-RVO2/src/rvo2.cpp
 #================================
 # Adam ==========================
 rvo2_build_backup
+**/__pycache__/
