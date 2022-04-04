@@ -9,6 +9,7 @@ from crowd_nav.utils.explorer import Explorer
 from crowd_nav.policy.policy_factory import policy_factory
 from crowd_sim.envs.utils.robot import Robot
 from crowd_sim.envs.policy.orca import ORCA
+from crowd_sim.envs.policy.sf import SF
 
 
 def main():
@@ -29,8 +30,9 @@ def main():
     args = parser.parse_args()
 
     if args.model_dir is not None:
-        env_config_file = os.path.join(args.model_dir, os.path.basename(args.env_config))
-        policy_config_file = os.path.join(args.model_dir, os.path.basename(args.policy_config))
+        ## XXX: I changed this; weird behaviour. Why wouldn't you look in specified config?
+        # env_config_file = os.path.join(args.model_dir, os.path.basename(args.env_config))
+        # policy_config_file = os.path.join(args.model_dir, os.path.basename(args.policy_config))
         if args.il:
             model_weights = os.path.join(args.model_dir, 'il_model.pth')
         else:
@@ -38,9 +40,9 @@ def main():
                 model_weights = os.path.join(args.model_dir, 'resumed_rl_model.pth')
             else:
                 model_weights = os.path.join(args.model_dir, 'rl_model.pth')
-    else:
-        env_config_file = args.env_config
-        policy_config_file = args.env_config
+    #else:
+    env_config_file = args.env_config
+    policy_config_file = args.env_config
 
     # configure logging and device
     logging.basicConfig(level=logging.INFO, format='%(asctime)s, %(levelname)s: %(message)s',
@@ -60,8 +62,10 @@ def main():
 
     # configure environment
     env_config = configparser.RawConfigParser()
+    print('\nenv_config_file:', env_config_file, "\n")
     env_config.read(env_config_file)
     env = gym.make('CrowdSim-v0')
+    print('\nenv_config:', env_config, "\n")
     env.configure(env_config)
     if args.square:
         env.test_sim = 'square_crossing'
@@ -82,16 +86,26 @@ def main():
             # because invisible case breaks the reciprocal assumption
             # adding some safety space improves ORCA performance. Tune this value based on your need.
             robot.policy.safety_space = 0
-        logging.info('ORCA agent buffer: %f', robot.policy.safety_space)
+        logging.info('ORCA robot agent buffer: %f', robot.policy.safety_space)
+
+    # TODO: any specifics for sf
+    # if isinstance(robot.policy, SF):
+
 
     policy.set_env(env)
     robot.print_info()
     if args.visualize:
+        # XXX: get the environment set up
+        #       - Set px, py, gx, gy, vx, vy, theta for robot and humans
+        # ob = observation
         ob = env.reset(args.phase, args.test_case)
         done = False
         last_pos = np.array(robot.get_position())
+
+        # ADAM: step through an episode until end
         while not done:
             action = robot.act(ob)
+            # ob, reward, done, info
             ob, _, done, info = env.step(action)
             current_pos = np.array(robot.get_position())
             logging.debug('Speed: %.2f', np.linalg.norm(current_pos - last_pos) / robot.time_step)
@@ -105,6 +119,8 @@ def main():
         if robot.visible and info == 'reach goal':
             human_times = env.get_human_times()
             logging.info('Average time for humans to reach goal: %.2f', sum(human_times) / len(human_times))
+
+    # ADAM: RUNNING TESTING FOR K EPISODES
     else:
         explorer.run_k_episodes(env.case_size[args.phase], args.phase, print_failure=True)
 

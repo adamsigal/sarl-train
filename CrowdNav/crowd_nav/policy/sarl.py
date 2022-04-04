@@ -34,8 +34,8 @@ class ValueNetwork(nn.Module):
         """
         size = state.shape
         self_state = state[:, 0, :self.self_state_dim]
-        mlp1_output = self.mlp1(state.view((-1, size[2])))
-        mlp2_output = self.mlp2(mlp1_output)
+        mlp1_output = self.mlp1(state.view((-1, size[2]))) # embedding e
+        mlp2_output = self.mlp2(mlp1_output) # pairwise interaction feature h
 
         if self.with_global_state:
             # compute attention scores

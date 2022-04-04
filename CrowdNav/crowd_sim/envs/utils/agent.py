@@ -5,18 +5,30 @@ import logging
 from crowd_sim.envs.policy.policy_factory import policy_factory
 from crowd_sim.envs.utils.action import ActionXY, ActionRot
 from crowd_sim.envs.utils.state import ObservableState, FullState
+from crowd_sim.envs.utils.utils import get_random_policy
 
 
 class Agent(object):
     def __init__(self, config, section):
         """
         Base class for robot and human. Have the physical attributes of an agent.
-
+        config: info from config file
+        section: section from config file -- i.e. 'human' or 'robot'
         """
         self.visible = config.getboolean(section, 'visible')
         self.v_pref = config.getfloat(section, 'v_pref')
         self.radius = config.getfloat(section, 'radius')
-        self.policy = policy_factory[config.get(section, 'policy')]()
+
+        # ADAM: random policy
+        if config.get(section, 'policy') == 'multi':
+            chosen = get_random_policy()
+            # ADAM: instanciated ORCA, SF, ..., class with no args
+            self.policy = policy_factory[chosen]()
+
+        # ADAM: single policy
+        else:
+            self.policy = policy_factory[config.get(section, 'policy')]()
+
         self.sensor = config.get(section, 'sensor')
         self.kinematics = self.policy.kinematics if self.policy is not None else None
         self.px = None
@@ -76,6 +88,18 @@ class Agent(object):
     def get_full_state(self):
         return FullState(self.px, self.py, self.vx, self.vy, self.radius, self.gx, self.gy, self.v_pref, self.theta)
 
+    def get_full_sf_state(self):
+        """
+        Return socialforce's full state and desired (max) speed
+        Format:
+            - state: np.array([x0, y0, v_x0, v_y0, goalx_0, goaly_0]),
+            - desired speed (aka max speed): float scalar
+
+            return: state, max_speed
+        """
+        return np.array([self.px, self.py, self.vx, self.vy, self.gx, self.gy]), self.v_pref
+
+
     def get_position(self):
         return self.px, self.py
 
@@ -122,6 +146,7 @@ class Agent(object):
     def step(self, action):
         """
         Perform an action and update the state
+        step:
         """
         self.check_validity(action)
         pos = self.compute_position(action, self.time_step)
@@ -136,4 +161,3 @@ class Agent(object):
 
     def reached_destination(self):
         return norm(np.array(self.get_position()) - np.array(self.get_goal_position())) < self.radius
-

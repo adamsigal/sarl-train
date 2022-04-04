@@ -8,6 +8,10 @@ from numpy.linalg import norm
 from crowd_sim.envs.utils.human import Human
 from crowd_sim.envs.utils.info import *
 from crowd_sim.envs.utils.utils import point_to_segment_dist
+from crowd_sim.envs.policy.sf import SF
+from crowd_sim.envs.policy.socialforce import Simulator, PedPedPotential, stateutils
+from crowd_sim.envs.policy.socialforce.fieldofview import FieldOfView
+from crowd_sim.envs.utils.action import ActionXY
 
 
 class CrowdSim(gym.Env):
@@ -43,6 +47,14 @@ class CrowdSim(gym.Env):
         self.square_width = None
         self.circle_radius = None
         self.human_num = None
+
+        self.sf = False
+        # ADAM: env's sf.Simulator object -- persistent unlike orca
+        self.sf_sim = None
+        # sf_state: (x, y, v_x, v_y, d_x, d_y, [tau])
+        self.sf_human_states = None
+        self.sf_v_prefs = None
+
         # for visualization
         self.states = None
         self.action_values = None
@@ -57,62 +69,107 @@ class CrowdSim(gym.Env):
         self.collision_penalty = config.getfloat('reward', 'collision_penalty')
         self.discomfort_dist = config.getfloat('reward', 'discomfort_dist')
         self.discomfort_penalty_factor = config.getfloat('reward', 'discomfort_penalty_factor')
-        if self.config.get('humans', 'policy') == 'orca':
+
+        # TODO: make sure that there is nothing else that needs to be added for sf or multi cases
+        #if self.config.get('humans', 'policy') == 'orca':
+        if self.config.get('humans', 'policy') in ('orca', 'sf', 'multi'):
             self.case_capacity = {'train': np.iinfo(np.uint32).max - 2000, 'val': 1000, 'test': 1000}
+            #                           = 4294965295                    default: 100
             self.case_size = {'train': np.iinfo(np.uint32).max - 2000, 'val': config.getint('env', 'val_size'),
+                              # default: 500
                               'test': config.getint('env', 'test_size')}
+            # env type: i.e. circle_crossing or square_crossing
             self.train_val_sim = config.get('sim', 'train_val_sim')
             self.test_sim = config.get('sim', 'test_sim')
             self.square_width = config.getfloat('sim', 'square_width')
             self.circle_radius = config.getfloat('sim', 'circle_radius')
+
             self.human_num = config.getint('sim', 'human_num')
+
+            if self.config.get('humans', 'policy') in ('sf', 'multi'):
+                self.sf = True
+        # #TODO:
+        # elif self.config.get('humans', 'policy') == 'sf':
+        #     raise NotImplementedError("configure policy when using socialforce")
+        # #TODO:
+        # elif self.config.get('humans', 'policy') == 'multi':
         else:
             raise NotImplementedError
         self.case_counter = {'train': 0, 'test': 0, 'val': 0}
 
         logging.info('human number: {}'.format(self.human_num))
         if self.randomize_attributes:
-            logging.info("Randomize human's radius and preferred speed")
+            logging.info("Randomizing human radius and preferred speed")
         else:
-            logging.info("Not randomize human's radius and preferred speed")
+            logging.info("Not randomize human radius and preferred speed")
         logging.info('Training simulation: {}, test simulation: {}'.format(self.train_val_sim, self.test_sim))
         logging.info('Square width: {}, circle width: {}'.format(self.square_width, self.circle_radius))
 
     def set_robot(self, robot):
         self.robot = robot
+        # TODO: ADD ROBOT TO SF STATE?
 
     def generate_random_human_position(self, human_num, rule):
         """
         Generate human position according to certain rule
+        TODO: WILL LIKELY CHANGE HOW THIS WORKS
         Rule square_crossing: generate start/goal position at two sides of y-axis
         Rule circle_crossing: generate start position on a circle, goal position is at the opposite side
 
-        :param human_num:
-        :param rule:
+        :param human_num: int
+        :param rule: simulator -- test_sim, train_val_sim
         :return:
         """
         # initial min separation distance to avoid danger penalty at beginning
         if rule == 'square_crossing':
             self.humans = []
+            if self.sf:
+                self.sf_human_states = []
+                self.sf_v_prefs = []
+
             for i in range(human_num):
-                self.humans.append(self.generate_square_crossing_human())
+                # XXX: HUMAN GENERATION
+                human = self.generate_square_crossing_human()
+                self.humans.append(human)
+                if self.sf:
+                    sf_state, v_pref = human.get_full_sf_state()
+                    self.sf_human_states.append(sf_state)
+                    self.sf_v_prefs.append(v_pref)
+
         elif rule == 'circle_crossing':
             self.humans = []
+            if self.sf:
+                self.sf_human_states = []
+                self.sf_v_prefs = []
+
             for i in range(human_num):
-                self.humans.append(self.generate_circle_crossing_human())
+                # XXX: HUMAN GENERATION
+                human = self.generate_circle_crossing_human()
+                self.humans.append(human)
+                if self.sf:
+                    sf_state, v_pref = human.get_full_sf_state()
+                    self.sf_human_states.append(sf_state)
+                    self.sf_v_prefs.append(v_pref)
+
         elif rule == 'mixed':
-            # mix different raining simulation with certain distribution
+            # mix different training simulation with certain distribution
             static_human_num = {0: 0.05, 1: 0.2, 2: 0.2, 3: 0.3, 4: 0.1, 5: 0.15}
             dynamic_human_num = {1: 0.3, 2: 0.3, 3: 0.2, 4: 0.1, 5: 0.1}
             static = True if np.random.random() < 0.2 else False
             prob = np.random.random()
+
+            # 80% chance we take vals from dynamic_human_num
+            # accomplishes that we have a decreasing probability to have more humans, with a max of 5
+            #   I honestly have no idea what the point of this is.
             for key, value in sorted(static_human_num.items() if static else dynamic_human_num.items()):
+                # if prob <= value, break from loop
                 if prob - value <= 0:
                     human_num = key
                     break
                 else:
                     prob -= value
             self.human_num = human_num
+            print("\n human_num for testing:", self.human_num, "\n")
             self.humans = []
             if static:
                 # randomly initialize static objects in a square of (width, height)
@@ -140,6 +197,7 @@ class CrowdSim(gym.Env):
                             break
                     human.set(px, py, px, py, 0, 0, 0)
                     self.humans.append(human)
+            # dynamic
             else:
                 # the first 2 two humans will be in the circle crossing scenarios
                 # the rest humans will have a random starting and end position
@@ -152,18 +210,29 @@ class CrowdSim(gym.Env):
         else:
             raise ValueError("Rule doesn't exist")
 
+
     def generate_circle_crossing_human(self):
+        # ADAM: mulit policy now supported.
         human = Human(self.config, 'humans')
+
+        # TODO: currently only randomizes vel. and radius. Maybe tau as well?
         if self.randomize_attributes:
             human.sample_random_attributes()
+
+        # initialize all agent positions so that there is no collision to begin with
         while True:
             angle = np.random.random() * np.pi * 2
             # add some noise to simulate all the possible cases robot could meet with human
             px_noise = (np.random.random() - 0.5) * human.v_pref
             py_noise = (np.random.random() - 0.5) * human.v_pref
+
+            # TODO: CHANGE TO ACTUAL RANDOM POSITION?
+            # start roughly on edge of circle
             px = self.circle_radius * np.cos(angle) + px_noise
             py = self.circle_radius * np.sin(angle) + py_noise
             collide = False
+
+            # see if there is a collision (or discomfort) between robot and any agents
             for agent in [self.robot] + self.humans:
                 min_dist = human.radius + agent.radius + self.discomfort_dist
                 if norm((px - agent.px, py - agent.py)) < min_dist or \
@@ -172,6 +241,9 @@ class CrowdSim(gym.Env):
                     break
             if not collide:
                 break
+        # TODO: MAKE HUMAN GOALS MORE INTERESTING
+        #       - goals are currently simply opposite side of circle
+        #set(self, px, py, gx, gy, vx, vy, theta, radius=None, v_pref=None):
         human.set(px, py, -px, -py, 0, 0, 0)
         return human
 
@@ -251,7 +323,7 @@ class CrowdSim(gym.Env):
     def reset(self, phase='test', test_case=None):
         """
         Set px, py, gx, gy, vx, vy, theta for robot and humans
-        :return:
+        :return: observation of robot [observable_state_human_0, ... ]
         """
         if self.robot is None:
             raise AttributeError('robot has to be set!')
@@ -260,14 +332,18 @@ class CrowdSim(gym.Env):
             self.case_counter[phase] = test_case
         self.global_time = 0
         if phase == 'test':
+            # humans all start at time 0
             self.human_times = [0] * self.human_num
         else:
+            # [0,0,....,0] if training with multiple humans; [0] if training with one (IL)
             self.human_times = [0] * (self.human_num if self.robot.policy.multiagent_training else 1)
         if not self.robot.policy.multiagent_training:
             self.train_val_sim = 'circle_crossing'
 
         if self.config.get('humans', 'policy') == 'trajnet':
             raise NotImplementedError
+
+        # if human policy is orca TODO: CHANGE
         else:
             counter_offset = {'train': self.case_capacity['val'] + self.case_capacity['test'],
                               'val': 0, 'test': self.case_capacity['val']}
@@ -293,10 +369,12 @@ class CrowdSim(gym.Env):
                 else:
                     raise NotImplementedError
 
+        # define time step duration
         for agent in [self.robot] + self.humans:
             agent.time_step = self.time_step
             agent.policy.time_step = self.time_step
 
+        # intantiate lists of states, action values, and attn_weights
         self.states = list()
         if hasattr(self.robot.policy, 'action_values'):
             self.action_values = list()
@@ -319,13 +397,73 @@ class CrowdSim(gym.Env):
         Compute actions for all agents, detect collision, update environment and return (ob, reward, done, info)
 
         """
-        human_actions = []
-        for human in self.humans:
-            # observation for humans is always coordinates
-            ob = [other_human.get_observable_state() for other_human in self.humans if other_human != human]
+        # TODO: compute all socialforce steps
+
+        #TODO: CREATE SIMULATOR OBJECT
+        #params = self.neighbor_dist, self.max_neighbors, , self.time_horizon_obst
+        # TODO: WE NEED SOME SF UTILS:
+        #   - get init_state
+        #   - maintain sf_state
+        #   - get max velocities
+        #v0_init = np.random.normal(1.34, 0.26, size=(2))
+        if self.sf:
+
+            assert(self.robot is not None)
+            robot_sf_state, robot_v_pref = self.robot.get_full_sf_state()
+            # print("\ngot robot sf state:")
+            # print("robot_sf_state:", robot_sf_state)
+            # print("robot_v_pref:", robot_v_pref, "\n")
+
+            # robot is added as the last agent in the simulator if visible
             if self.robot.visible:
-                ob += [self.robot.get_observable_state()]
-            human_actions.append(human.act(ob))
+                init_state = np.array(self.sf_human_states + [robot_sf_state])
+                max_speeds = np.array(self.sf_v_prefs + [robot_v_pref])
+            else:
+                init_state = np.array(self.sf_human_states)
+                max_speeds = np.array(self.sf_v_prefs)
+
+            #print("\nv0 speed for ped_ped:", stateutils.speeds(init_state), "\n")
+            #ped_ped = PedPedPotential(self.time_step, v0=stateutils.speeds(init_state))
+            ped_ped = PedPedPotential(self.time_step, v0=max_speeds)
+            field_of_view = FieldOfView()
+            self.sf_sim = Simulator(
+                                init_state,
+                                ped_ped = ped_ped,
+                                field_of_view = field_of_view,
+                                delta_t = self.time_step,
+                                max_speeds = max_speeds
+                            )
+        # Seems good.
+        # (6,7) -- 5 pedestrians plus the robot
+        # print("\nsf_state shape after init:", self.sf_sim.state.shape)
+        # print("sf max speeds after init :", self.sf_sim.max_speeds, "\n")
+        # XXX: TAKE ONE SF STEP!
+        if self.robot.visible: #                            , -1 to remove robot
+            sf_next_human_states = self.sf_sim.step().state[:-1]
+        else:
+            sf_next_human_states = self.sf_sim.step().state
+
+        assert(sf_next_human_states.shape[0] == self.human_num)
+
+
+        human_actions = []
+        for i, human in enumerate(self.humans):
+
+            # if the human uses SF, take update from above
+            if isinstance(human.policy, SF):
+                action = ActionXY(sf_next_human_states[i,2], sf_next_human_states[i,3])
+                human_actions.append(action)
+
+            # if human not using SF
+            else:
+                # observation for humans is always coordinates.
+                # get obs. states of all other humans
+                ob = [other_human.get_observable_state() for other_human in self.humans if other_human != human]
+                if self.robot.visible:
+                    ob += [self.robot.get_observable_state()]
+
+                # ADAM: HUMAN TAKES ACTION (i.e. append new velocity)
+                human_actions.append(human.act(ob))
 
         # collision detection
         dmin = float('inf')
@@ -361,7 +499,7 @@ class CrowdSim(gym.Env):
                     # detect collision but don't take humans' collision into account
                     logging.debug('Collision happens between humans in step()')
 
-        # check if reaching the goal
+        # check if robot reaching the goal
         end_position = np.array(self.robot.compute_position(action, self.time_step))
         reaching_goal = norm(end_position - np.array(self.robot.get_goal_position())) < self.robot.radius
 
@@ -400,6 +538,10 @@ class CrowdSim(gym.Env):
             self.robot.step(action)
             for i, human_action in enumerate(human_actions):
                 self.humans[i].step(human_action)
+                if self.sf:
+                    sf_state, _ = self.humans[i].get_full_sf_state()
+                    self.sf_human_states[i] = sf_state
+
             self.global_time += self.time_step
             for i, human in enumerate(self.humans):
                 # only record the first time the human reaches the goal

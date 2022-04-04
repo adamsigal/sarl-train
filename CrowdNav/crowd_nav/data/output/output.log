@@ -1,3 +1,10 @@
-2022-03-24 12:17:11, INFO: Current git head hash code: %s
-2022-03-24 12:17:11, INFO: Using device: cpu
-2022-03-24 12:17:11, INFO: Policy: SARL w/ global state
+2022-03-26 17:45:09, INFO: Current git head hash code: %s
+2022-03-26 17:45:09, INFO: Using device: cpu
+2022-03-26 17:45:10, INFO: Policy: SARL w/ global state
+2022-03-26 17:45:10, INFO: human number: 5
+2022-03-26 17:45:10, INFO: Not randomize human's radius and preferred speed
+2022-03-26 17:45:10, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2022-03-26 17:45:10, INFO: Square width: 10.0, circle width: 4.0
+2022-03-26 17:45:10, INFO: Load imitation learning trained weights.
+2022-03-26 17:45:10, INFO: Agent is invisible and has holonomic kinematic constraint
+2022-03-26 17:45:10, INFO: Current learning rate: 0.001000

@@ -91,6 +91,8 @@ class ORCA(Policy):
         :return:
         """
         self_state = state.self_state
+        print("self_state type:", str(type(self_state)))
+        print("self_state type:", str(type(state)))
         params = self.neighbor_dist, self.max_neighbors, self.time_horizon, self.time_horizon_obst
         if self.sim is not None and self.sim.getNumAgents() != len(state.human_states) + 1:
             del self.sim

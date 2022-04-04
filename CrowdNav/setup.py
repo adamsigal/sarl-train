@@ -13,6 +13,7 @@ setup(
         'crowd_sim.envs',
         'crowd_sim.envs.policy',
         'crowd_sim.envs.utils',
+        'crowd_sim.envs.policy.socialforce',
     ],
     install_requires=[
         'gitpython',

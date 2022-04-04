@@ -1,5 +1,7 @@
 import numpy as np
-
+import random
+from crowd_sim.envs.policy.orca import ORCA
+from crowd_sim.envs.policy.sf import SF
 
 def point_to_segment_dist(x1, y1, x2, y2, x3, y3):
     """
@@ -24,3 +26,7 @@ def point_to_segment_dist(x1, y1, x2, y2, x3, y3):
     y = y1 + u * py
 
     return np.linalg.norm((x - x3, y-y3))
+
+def get_random_policy():
+    available_human_policies = (ORCA, SF)
+    return random.choice(available_human_policies)

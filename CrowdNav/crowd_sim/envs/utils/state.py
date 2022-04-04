@@ -1,3 +1,5 @@
+import numpy as np
+
 class FullState(object):
     def __init__(self, px, py, vx, vy, radius, gx, gy, v_pref, theta):
         self.px = px
@@ -21,7 +23,6 @@ class FullState(object):
         return ' '.join([str(x) for x in [self.px, self.py, self.vx, self.vy, self.radius, self.gx, self.gy,
                                           self.v_pref, self.theta]])
 
-
 class ObservableState(object):
     def __init__(self, px, py, vx, vy, radius):
         self.px = px
@@ -38,7 +39,6 @@ class ObservableState(object):
 
     def __str__(self):
         return ' '.join([str(x) for x in [self.px, self.py, self.vx, self.vy, self.radius]])
-
 
 class JointState(object):
     def __init__(self, self_state, human_states):
