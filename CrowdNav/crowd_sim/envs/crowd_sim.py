@@ -13,6 +13,9 @@ from crowd_sim.envs.policy.socialforce import Simulator, PedPedPotential, stateu
 from crowd_sim.envs.policy.socialforce.fieldofview import FieldOfView
 from crowd_sim.envs.utils.action import ActionXY
 
+# TODO: delete
+import sys
+
 
 class CrowdSim(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -70,8 +73,6 @@ class CrowdSim(gym.Env):
         self.discomfort_dist = config.getfloat('reward', 'discomfort_dist')
         self.discomfort_penalty_factor = config.getfloat('reward', 'discomfort_penalty_factor')
 
-        # TODO: make sure that there is nothing else that needs to be added for sf or multi cases
-        #if self.config.get('humans', 'policy') == 'orca':
         if self.config.get('humans', 'policy') in ('orca', 'sf', 'multi'):
             self.case_capacity = {'train': np.iinfo(np.uint32).max - 2000, 'val': 1000, 'test': 1000}
             #                           = 4294965295                    default: 100
@@ -88,11 +89,6 @@ class CrowdSim(gym.Env):
 
             if self.config.get('humans', 'policy') in ('sf', 'multi'):
                 self.sf = True
-        # #TODO:
-        # elif self.config.get('humans', 'policy') == 'sf':
-        #     raise NotImplementedError("configure policy when using socialforce")
-        # #TODO:
-        # elif self.config.get('humans', 'policy') == 'multi':
         else:
             raise NotImplementedError
         self.case_counter = {'train': 0, 'test': 0, 'val': 0}
@@ -107,7 +103,6 @@ class CrowdSim(gym.Env):
 
     def set_robot(self, robot):
         self.robot = robot
-        # TODO: ADD ROBOT TO SF STATE?
 
     def generate_random_human_position(self, human_num, rule):
         """
@@ -151,6 +146,7 @@ class CrowdSim(gym.Env):
                     self.sf_human_states.append(sf_state)
                     self.sf_v_prefs.append(v_pref)
 
+        # XXX: NEVER USED; DON'T GET THE POINT
         elif rule == 'mixed':
             # mix different training simulation with certain distribution
             static_human_num = {0: 0.05, 1: 0.2, 2: 0.2, 3: 0.3, 4: 0.1, 5: 0.15}
@@ -212,11 +208,13 @@ class CrowdSim(gym.Env):
 
 
     def generate_circle_crossing_human(self):
-        # ADAM: mulit policy now supported.
+        # ADAM: multi policy now supported.
         human = Human(self.config, 'humans')
 
         # TODO: currently only randomizes vel. and radius. Maybe tau as well?
         if self.randomize_attributes:
+            # v_pref: between [0.5, 1.5]
+            # radius: between [0.3, 0.5]
             human.sample_random_attributes()
 
         # initialize all agent positions so that there is no collision to begin with
@@ -243,8 +241,15 @@ class CrowdSim(gym.Env):
                 break
         # TODO: MAKE HUMAN GOALS MORE INTERESTING
         #       - goals are currently simply opposite side of circle
-        #set(self, px, py, gx, gy, vx, vy, theta, radius=None, v_pref=None):
-        human.set(px, py, -px, -py, 0, 0, 0)
+        #set(self,    px, py,  gx,  gy, vx, vy, theta, radius=None, v_pref=None):
+        if isinstance(human.policy, SF):
+            # for sf, vx & vy must be initiated at v_pref
+            direction = stateutils.desired_directions(np.array([[px, py, 0, 0, -px, -py]])).squeeze()
+            vx, vy = direction*human.v_pref#*0.5
+            theta = np.arctan2(py, px)
+        else:
+            vx, vy, theta = 0, 0, 0
+        human.set(px, py, -px, -py, vx, vy, theta)
         return human
 
     def generate_square_crossing_human(self):
@@ -275,7 +280,23 @@ class CrowdSim(gym.Env):
                     break
             if not collide:
                 break
-        human.set(px, py, gx, gy, 0, 0, 0)
+
+        # TODO: MAKE HUMAN GOALS MORE INTERESTING
+        #       - goals are currently simply opposite side of circle
+        #set(self,    px, py,  gx,  gy, vx, vy, theta, radius=None, v_pref=None):
+        if isinstance(human.policy, SF):
+            # for sf, vx & vy must be initiated at v_pref
+            direction = stateutils.desired_directions(np.array([[px, py, 0, 0, gx, gy]])).squeeze()
+            #print('\ndirection:', direction)
+            vx, vy = direction*human.v_pref#*0.5
+            theta = np.arctan2(py, px)
+            # print('px:', px, ", py:", py)
+            # print('vx:', vx, ", vy:", vy)
+            # print('theta:', theta, "\n")
+        else:
+            vx, vy, theta = 0, 0, 0
+        human.set(px, py, gx, gy, vx, vy, theta)
+        #human.set(px, py, gx, gy, 0, 0, 0)
         return human
 
     def get_human_times(self):
@@ -401,59 +422,57 @@ class CrowdSim(gym.Env):
 
         #TODO: CREATE SIMULATOR OBJECT
         #params = self.neighbor_dist, self.max_neighbors, , self.time_horizon_obst
-        # TODO: WE NEED SOME SF UTILS:
-        #   - get init_state
-        #   - maintain sf_state
-        #   - get max velocities
         #v0_init = np.random.normal(1.34, 0.26, size=(2))
         if self.sf:
-
             assert(self.robot is not None)
             robot_sf_state, robot_v_pref = self.robot.get_full_sf_state()
-            # print("\ngot robot sf state:")
-            # print("robot_sf_state:", robot_sf_state)
-            # print("robot_v_pref:", robot_v_pref, "\n")
 
             # robot is added as the last agent in the simulator if visible
             if self.robot.visible:
                 init_state = np.array(self.sf_human_states + [robot_sf_state])
                 max_speeds = np.array(self.sf_v_prefs + [robot_v_pref])
+                #radii = np.array([h.radius for h in self.humans] + [robot.radius])
             else:
                 init_state = np.array(self.sf_human_states)
                 max_speeds = np.array(self.sf_v_prefs)
+                #radii = np.array([h.radius for h in self.humans])
 
-            #print("\nv0 speed for ped_ped:", stateutils.speeds(init_state), "\n")
-            #ped_ped = PedPedPotential(self.time_step, v0=stateutils.speeds(init_state))
-            ped_ped = PedPedPotential(self.time_step, v0=max_speeds)
-            field_of_view = FieldOfView()
-            self.sf_sim = Simulator(
-                                init_state,
-                                ped_ped = ped_ped,
-                                field_of_view = field_of_view,
-                                delta_t = self.time_step,
-                                max_speeds = max_speeds
-                            )
-        # Seems good.
-        # (6,7) -- 5 pedestrians plus the robot
-        # print("\nsf_state shape after init:", self.sf_sim.state.shape)
-        # print("sf max speeds after init :", self.sf_sim.max_speeds, "\n")
-        # XXX: TAKE ONE SF STEP!
-        if self.robot.visible: #                            , -1 to remove robot
-            sf_next_human_states = self.sf_sim.step().state[:-1]
-        else:
-            sf_next_human_states = self.sf_sim.step().state
+            # if sf_sim not initialized
+            if self.sf_sim is None:
+                ped_ped = PedPedPotential(self.time_step, v0=max_speeds)
+                field_of_view = FieldOfView()
+                self.sf_sim = Simulator(
+                                    init_state,
+                                    #radii,
+                                    ped_ped = ped_ped,
+                                    field_of_view = field_of_view,
+                                    delta_t = self.time_step,
+                                    max_speeds = max_speeds
+                                )
+            # update sim
+            else:
+                self.sf_sim.set_state(init_state)
 
-        assert(sf_next_human_states.shape[0] == self.human_num)
+            # XXX: TAKE ONE SF STEP!
+            if self.robot.visible: #                             -1 to remove robot
+                sf_next_human_states = self.sf_sim.step().state[:-1]
+            else:
+                sf_next_human_states = self.sf_sim.step().state
 
+            assert(sf_next_human_states.shape[0] == self.human_num)
 
+        # XXX: get human actions -- order seems to be fine in this loop
         human_actions = []
         for i, human in enumerate(self.humans):
-
             # if the human uses SF, take update from above
             if isinstance(human.policy, SF):
-                action = ActionXY(sf_next_human_states[i,2], sf_next_human_states[i,3])
-                human_actions.append(action)
-
+                # stay put if reached destination
+                if human.reached_destination():
+                    #print("human", i, "reached destination")
+                    sf_action = ActionXY(0, 0)
+                else:
+                    sf_action = ActionXY(sf_next_human_states[i,2], sf_next_human_states[i,3])
+                human_actions.append(sf_action)
             # if human not using SF
             else:
                 # observation for humans is always coordinates.

@@ -42,7 +42,7 @@ def main():
                 model_weights = os.path.join(args.model_dir, 'rl_model.pth')
     #else:
     env_config_file = args.env_config
-    policy_config_file = args.env_config
+    policy_config_file = args.policy_config
 
     # configure logging and device
     logging.basicConfig(level=logging.INFO, format='%(asctime)s, %(levelname)s: %(message)s',
@@ -65,7 +65,7 @@ def main():
     print('\nenv_config_file:', env_config_file, "\n")
     env_config.read(env_config_file)
     env = gym.make('CrowdSim-v0')
-    print('\nenv_config:', env_config, "\n")
+    #print('\nenv_config:', env_config, "\n")
     env.configure(env_config)
     if args.square:
         env.test_sim = 'square_crossing'
@@ -103,6 +103,9 @@ def main():
         last_pos = np.array(robot.get_position())
 
         # ADAM: step through an episode until end
+        #print("np.array([   px,   py,   vx,   vy,   gx,   gy])")
+              #human 0: [ 1.26 -4.74  0.91 -0.66  1.06 -4.59]
+        np.set_printoptions(precision=2)
         while not done:
             action = robot.act(ob)
             # ob, reward, done, info

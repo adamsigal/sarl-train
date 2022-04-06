@@ -159,6 +159,7 @@ class SF(Policy):
         :return:
         action
         """
+        raise NotImplementedError("SF.predict() shouldn't be called.")
         #self_state = state.self_state
         params = self.neighbor_dist, self.max_neighbors, self.time_horizon, self.time_horizon_obst
         v0_init = np.random.normal(1.34, 0.26, size=(2))

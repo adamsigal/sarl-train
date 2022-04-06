@@ -10,6 +10,7 @@ import numpy as np
 from .potentials import PedPedPotential
 from .fieldofview import FieldOfView
 from . import stateutils
+#from crowd_sim.envs.utils.agent import Agent
 
 MAX_SPEED_MULTIPLIER = 1.3  # with respect to initial speed
 
@@ -18,7 +19,7 @@ class Simulator(object):
     """Simulate social force model.
 
     Main interface is the state. Every pedestrian is an entry in the state and
-    represented by a vector (x, y, v_x, v_y, d_x, d_y, [tau]).
+    represented by a vector (px, py, vx, vy, gx, gy, [tau]).
     tau is optional in this vector.
 
     state: np array of size [num_humans, 7]
@@ -30,15 +31,14 @@ class Simulator(object):
     tau in seconds: either float or numpy array of shape[n_ped].
         XXX: former default: 0.5
 
-    max_speeds np.array of floats; shape (n_ped); XXX: *speeds*, so not 2d.
+    max_speeds: np.array of floats; shape (n_ped); XXX: *speeds*, so not 2d.
         - Equivalent to preferred speeds
     """
     def __init__(self, initial_state, ped_space=None, ped_ped=None,
-                 field_of_view=None, delta_t=0.4, tau=None, max_speeds=None):
+                 field_of_view=None, delta_t=0.4, tau=0.5, max_speeds=None):
         self.state = initial_state
         self.initial_speeds = stateutils.speeds(initial_state)
 
-        ## AKA Desired Speeds TODO: maybe not proper way
         if max_speeds is None:
             self.max_speeds = MAX_SPEED_MULTIPLIER * self.initial_speeds
         else:
@@ -49,11 +49,10 @@ class Simulator(object):
         if self.state.shape[1] < 7:
             # if tau is a float, not an ndarray
             if not hasattr(tau, 'shape'):
-                #print("hasattr(tau, 'shape'):", hasattr(tau, 'shape'))
-                #print("tau:", tau)
                 if tau is None:
-                    # TODO: IS IT FINE TO HAVE RANDOM TAU [0,1]?
-                    tau = np.random.rand(self.state.shape[0])
+                    #tau = np.random.rand(self.state.shape[0])
+                    # XXX: TAU IS NOW SET TO 0 BY DEFAULT
+                    tau = self.delta_t * np.ones(self.state.shape[0])
                 else:
                     tau = tau * np.ones(self.state.shape[0])
                 #print("New tau:", tau)
@@ -65,6 +64,17 @@ class Simulator(object):
 
         # field of view
         self.w = field_of_view or FieldOfView()
+
+    def set_state(self, new_state):
+        if new_state.shape == self.state.shape:
+            self.state = new_state
+
+        # sf_state without tau
+        elif ((new_state.shape[0] == self.state.shape[0]) and
+              (new_state.shape[1] == 6)):
+            self.state[:,:6] = new_state
+        else:
+            raise ValueError("New state of shape", new_state.shape, "shoud be of shape", self.state.shape, "or", (self.state.shape[0], 6) )
 
     def f_ab(self):
         """Compute f_ab."""
@@ -102,15 +112,19 @@ class Simulator(object):
         # social force
         F = F0 + np.sum(F_ab, axis=1) + np.sum(F_aB, axis=1)
 
+        #print("Social force on human 0:", F[0])
+
         # desired velocity (#humans, 2)
         #       current velocities   time        overall force = velocity (i guess)
-        w = self.state[:, 2:4] + self.delta_t * F
-        # TODO: is this what I want? current velocities influenced?
-        # Maybe I actually do want max velocity to be preferred.
-        # I think I actually do.
+        w = self.state[:, 2:4] + self.delta_t * F #* 5
 
         # velocity
         v = self.capped_velocity(w)
+
+        # # XXX: if reached goal, stop moving! (vx, vy = 0)
+        # # contains list of indices (dim=0) of agents who have reached the goal (gotten within 0.1m)
+        # goal_idxs = np.nonzero(np.linalg.norm(self.state[:,0:2] - self.state[:,4:6], axis=1) <= 0.1 )
+        # self.state[goal_idxs, 2:4] = 0
 
         # update state
         self.state[:, 0:2] += v * self.delta_t

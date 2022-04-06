@@ -17,6 +17,7 @@ class Agent(object):
         """
         self.visible = config.getboolean(section, 'visible')
         self.v_pref = config.getfloat(section, 'v_pref')
+        #print('in Agent -- v_pref:', self.v_pref)
         self.radius = config.getfloat(section, 'radius')
 
         # ADAM: random policy
