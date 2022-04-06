@@ -28,3 +28,9 @@ yes | pip install -e ~/Documents/2022-meng/sarl-train/CrowdNav/.
 cd ~/Documents/2022-meng/sarl-train/CrowdNav/crowd_nav/
 echo '4'
 yes Y | python ~/Documents/2022-meng/sarl-train/CrowdNav/crowd_nav/train.py --policy sarl
+
+
+
+yes Y | python 3.6 -m pip uninstall torch torchvision torchaudio
+# must install cuda 11.3 in order for it to work on nvidia rtx 3080
+yes Y | python3.6 -m pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113
