@@ -26,7 +26,7 @@ class Agent(object):
             # ADAM: instanciated ORCA, SF, ..., class with no args
             self.policy = policy_factory[chosen]()
 
-        # ADAM: single policy
+        # ADAM: fixed policy
         else:
             self.policy = policy_factory[config.get(section, 'policy')]()
 

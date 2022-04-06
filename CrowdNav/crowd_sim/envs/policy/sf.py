@@ -6,14 +6,15 @@ from crowd_sim.envs.utils.action import ActionXY
 
 from crowd_sim.envs.policy.socialforce import Simulator, PedPedPotential
 from crowd_sim.envs.policy.socialforce.fieldofview import FieldOfView
-# should be covered
-# from ../../../../socialforce.potentials import PedPedPotential
-# from ../../../../socialforce.fieldofview import FieldOfView
 
 
 class SF(Policy):
     def __init__(self):
         """
+        SF policy is a placeholder, as it is more efficient to code it directly
+        in crowd_sim.py. No functions from this class should ever be called.
+        ========================================================================
+        == ORCA Class docstring ================================================
         timeStep        The time step of the simulation.
                         Must be positive.
         neighborDist    The default maximum distance (center point
@@ -73,65 +74,13 @@ class SF(Policy):
         self.max_speed = 1
         self.sim = None
 
-    # Taken from https://github.com/vita-epfl/trajnetplusplusdataset/blob/6364550049d12336ef077dc12c1b9721f2182af5/trajnetdataset/controlled_data.py#L18
-    # No equivalent in ORCA
-    # TODO: should this be its own utils file? should this be called get_circle_crossing
-    # probably shouldn't use; this creates a circle crossing from nothing, and this class is to be used in an extant env
-    def generate_circle_crossing(self, num_ped, sim=None, radius=4, mode=None):
-        positions = []
-        goals = []
-        speed = []
-        agent_list = []
-        if mode == 'trajnet':
-            radius = 10 ## 10 (TrajNet++)
-        for _ in range(num_ped):
-            while True:
-                angle = random.uniform(0, 1) * np.pi * 2
-                # add some noise to simulate all the possible cases robot could meet with human
-                px_noise = (random.uniform(0, 1) - 0.5)  ## human.v_pref
-                py_noise = (random.uniform(0, 1) - 0.5)  ## human.v_pref
-                px = radius * np.cos(angle) + px_noise
-                py = radius * np.sin(angle) + py_noise
-                collide = False
-                for agent in agent_list:
-                    min_dist = 0.8
-                    if mode == 'trajnet':
-                        min_dist = 2    ## min_dist ~ 2*human.radius + discomfort_dist ## 2 (TrajNet++)
-                    if norm((px - agent[0], py - agent[1])) < min_dist or \
-                            norm((px - agent[2], py - agent[3])) < min_dist:
-                        collide = True
-                        break
-                if not collide:
-                    break
-
-            positions.append((px, py))
-            goals.append((-px, -py))
-            if sim is not None:
-                sim.addAgent((px, py))
-            velocity = np.array([-2 * px, -2 * py])
-            magnitude = np.linalg.norm(velocity)
-            init_vel = 1 * velocity / magnitude if magnitude > 1 else velocity
-            speed.append([init_vel[0], init_vel[1]])
-            agent_list.append([px, py, -px, -py])
-        trajectories = [[positions[i]] for i in range(num_ped)]
-        return trajectories, positions, goals, speed
-
     def configure(self, config):
-        # self.time_step = config.getfloat('orca', 'time_step')
-        # self.neighbor_dist = config.getfloat('orca', 'neighbor_dist')
-        # self.max_neighbors = config.getint('orca', 'max_neighbors')
-        # self.time_horizon = config.getfloat('orca', 'time_horizon')
-        # self.time_horizon_obst = config.getfloat('orca', 'time_horizon_obst')
-        # self.radius = config.getfloat('orca', 'radius')
-        # self.max_speed = config.getfloat('orca', 'max_speed')
         return
 
     def set_phase(self, phase):
         return
 
-    # TODO: incorporate sf_params into state
-    #                                  [tau, v0,  sigma]
-    def predict(self, state):#, sf_params=[0.5, 2.1, 0.3], end_range=0.2):
+    def predict(self, state):
         """
         Create a socialforce simulation at each time step and run one step
 

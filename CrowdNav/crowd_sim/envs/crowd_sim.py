@@ -13,9 +13,6 @@ from crowd_sim.envs.policy.socialforce import Simulator, PedPedPotential, stateu
 from crowd_sim.envs.policy.socialforce.fieldofview import FieldOfView
 from crowd_sim.envs.utils.action import ActionXY
 
-# TODO: delete
-import sys
-
 
 class CrowdSim(gym.Env):
     metadata = {'render.modes': ['human']}

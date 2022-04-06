@@ -65,7 +65,7 @@ def main():
     print('\nenv_config_file:', env_config_file, "\n")
     env_config.read(env_config_file)
     env = gym.make('CrowdSim-v0')
-    #print('\nenv_config:', env_config, "\n")
+
     env.configure(env_config)
     if args.square:
         env.test_sim = 'square_crossing'
@@ -88,23 +88,18 @@ def main():
             robot.policy.safety_space = 0
         logging.info('ORCA robot agent buffer: %f', robot.policy.safety_space)
 
-    # TODO: any specifics for sf
-    # if isinstance(robot.policy, SF):
-
 
     policy.set_env(env)
     robot.print_info()
     if args.visualize:
         # XXX: get the environment set up
         #       - Set px, py, gx, gy, vx, vy, theta for robot and humans
-        # ob = observation
+        # ob: observation
         ob = env.reset(args.phase, args.test_case)
         done = False
         last_pos = np.array(robot.get_position())
 
         # ADAM: step through an episode until end
-        #print("np.array([   px,   py,   vx,   vy,   gx,   gy])")
-              #human 0: [ 1.26 -4.74  0.91 -0.66  1.06 -4.59]
         np.set_printoptions(precision=2)
         while not done:
             action = robot.act(ob)

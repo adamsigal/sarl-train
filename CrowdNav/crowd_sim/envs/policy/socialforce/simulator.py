@@ -68,7 +68,6 @@ class Simulator(object):
     def set_state(self, new_state):
         if new_state.shape == self.state.shape:
             self.state = new_state
-
         # sf_state without tau
         elif ((new_state.shape[0] == self.state.shape[0]) and
               (new_state.shape[1] == 6)):
@@ -112,19 +111,12 @@ class Simulator(object):
         # social force
         F = F0 + np.sum(F_ab, axis=1) + np.sum(F_aB, axis=1)
 
-        #print("Social force on human 0:", F[0])
-
         # desired velocity (#humans, 2)
         #       current velocities   time        overall force = velocity (i guess)
         w = self.state[:, 2:4] + self.delta_t * F #* 5
 
         # velocity
         v = self.capped_velocity(w)
-
-        # # XXX: if reached goal, stop moving! (vx, vy = 0)
-        # # contains list of indices (dim=0) of agents who have reached the goal (gotten within 0.1m)
-        # goal_idxs = np.nonzero(np.linalg.norm(self.state[:,0:2] - self.state[:,4:6], axis=1) <= 0.1 )
-        # self.state[goal_idxs, 2:4] = 0
 
         # update state
         self.state[:, 0:2] += v * self.delta_t
