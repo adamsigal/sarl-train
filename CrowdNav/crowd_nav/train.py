@@ -71,6 +71,7 @@ def main():
     policy.set_device(device)
 
     # configure environment
+    print("\nargs.env_config", args.env_config, "\n")
     env_config = configparser.RawConfigParser()
     env_config.read(args.env_config)
     env = gym.make('CrowdSim-v0')
