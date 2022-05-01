@@ -23,7 +23,7 @@ sudo apt-get install python3.6 python3.6-dev python3.6-venv
 sudo python3.6 -m pip install virtualenv
 ```
 
-2. Navigate to repository and activate venv.
+2. Navigate to the repository and activate venv.
 ```
 cd /path/to/sarl-train/
 virtualenv --python=/usr/bin/python3.6 venv
