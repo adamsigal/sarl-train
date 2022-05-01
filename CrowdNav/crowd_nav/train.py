@@ -40,6 +40,8 @@ def main():
             args.train_config = os.path.join(args.output_dir, os.path.basename(args.train_config))
     if make_new_dir:
         os.makedirs(args.output_dir)
+        os.makedirs(os.path.join(args.output_dir, 'eval'))
+        os.makedirs(os.path.join(args.output_dir, 'vids'))
         shutil.copy(args.env_config, args.output_dir)
         shutil.copy(args.policy_config, args.output_dir)
         shutil.copy(args.train_config, args.output_dir)
@@ -71,7 +73,7 @@ def main():
     policy.set_device(device)
 
     # configure environment
-    print("\nargs.env_config", args.env_config, "\n")
+    logging.info(f'Env config file: {args.env_config}')
     env_config = configparser.RawConfigParser()
     env_config.read(args.env_config)
     env = gym.make('CrowdSim-v0')
@@ -141,10 +143,14 @@ def main():
     trainer.set_learning_rate(rl_learning_rate)
     # fill the memory pool with some RL experience
     if args.resume:
+        episode = 5000
+        logging.info(f'Resuming training at episode: {episode}')
         robot.policy.set_epsilon(epsilon_end)
         explorer.run_k_episodes(100, 'train', update_memory=True, episode=0)
         logging.info('Experience set size: %d/%d', len(memory), memory.capacity)
-    episode = 0
+        # ADAM: TODO: MAKE THIS READ, NOT HARDCODED!
+    else:
+        episode = 0
     while episode < train_episodes:
         if args.resume:
             epsilon = epsilon_end

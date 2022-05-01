@@ -94,7 +94,7 @@ class CrowdSim(gym.Env):
         if self.randomize_attributes:
             logging.info("Randomizing human radius and preferred speed")
         else:
-            logging.info("Not randomize human radius and preferred speed")
+            logging.info("Not randomizing human radius and preferred speed")
         logging.info('Training simulation: {}, test simulation: {}'.format(self.train_val_sim, self.test_sim))
         logging.info('Square width: {}, circle width: {}'.format(self.square_width, self.circle_radius))
 
@@ -119,9 +119,19 @@ class CrowdSim(gym.Env):
                 self.sf_human_states = []
                 self.sf_v_prefs = []
 
-            for i in range(human_num):
-                # XXX: HUMAN GENERATION
-                human = self.generate_square_crossing_human()
+            #for i in range(human_num):
+            fail = False
+            # XXX: HUMAN GENERATION
+            while len(self.humans) < human_num:
+                # restart human generation bc it found a stalemate config
+                if fail:
+                    fail = False
+                    self.humans = []
+                    if self.sf:
+                        self.sf_human_states = []
+                        self.sf_v_prefs = []
+
+                human, fail = self.generate_square_crossing_human()
                 self.humans.append(human)
                 if self.sf:
                     sf_state, v_pref = human.get_full_sf_state()
@@ -134,16 +144,27 @@ class CrowdSim(gym.Env):
                 self.sf_human_states = []
                 self.sf_v_prefs = []
 
-            for i in range(human_num):
+            #for i in range(human_num):
+            fail = False
+            while len(self.humans) < human_num:
+                # restart human generation bc it found a stalemate config
+                if fail:
+                    fail = False
+                    self.humans = []
+                    if self.sf:
+                        self.sf_human_states = []
+                        self.sf_v_prefs = []
+
                 # XXX: HUMAN GENERATION
-                human = self.generate_circle_crossing_human()
+                # ADAM: problem is here
+                human, fail = self.generate_circle_crossing_human()
                 self.humans.append(human)
                 if self.sf:
                     sf_state, v_pref = human.get_full_sf_state()
                     self.sf_human_states.append(sf_state)
                     self.sf_v_prefs.append(v_pref)
 
-        # XXX: NEVER USED; DON'T GET THE POINT
+        # ADAM: NEVER USED; DON'T GET THE POINT
         elif rule == 'mixed':
             # mix different training simulation with certain distribution
             static_human_num = {0: 0.05, 1: 0.2, 2: 0.2, 3: 0.3, 4: 0.1, 5: 0.15}
@@ -196,9 +217,9 @@ class CrowdSim(gym.Env):
                 # the rest humans will have a random starting and end position
                 for i in range(human_num):
                     if i < 2:
-                        human = self.generate_circle_crossing_human()
+                        human, _ = self.generate_circle_crossing_human()
                     else:
-                        human = self.generate_square_crossing_human()
+                        human, _ = self.generate_square_crossing_human()
                     self.humans.append(human)
         else:
             raise ValueError("Rule doesn't exist")
@@ -213,15 +234,16 @@ class CrowdSim(gym.Env):
             # v_pref: between [0.5, 1.5]
             # radius: between [0.3, 0.5]
             human.sample_random_attributes()
-
         # initialize all agent positions so that there is no collision to begin with
-        while True:
+        ctr = 0
+        fail = False
+        while True and ctr < 1500:
+            ctr += 1
             angle = np.random.random() * np.pi * 2
             # add some noise to simulate all the possible cases robot could meet with human
             px_noise = (np.random.random() - 0.5) * human.v_pref
             py_noise = (np.random.random() - 0.5) * human.v_pref
 
-            # TODO: CHANGE TO ACTUAL RANDOM POSITION?
             # start roughly on edge of circle
             px = self.circle_radius * np.cos(angle) + px_noise
             py = self.circle_radius * np.sin(angle) + py_noise
@@ -236,8 +258,10 @@ class CrowdSim(gym.Env):
                     break
             if not collide:
                 break
-        # TODO: MAKE HUMAN GOALS MORE INTERESTING
-        #       - goals are currently simply opposite side of circle
+        if ctr >= 1500:
+            fail = True
+            logging.debug(f'Too many attempts at placing human. Retrying from the start.')
+            logging.debug(f'Attempt counter: {ctr}')
         #set(self,    px, py,  gx,  gy, vx, vy, theta, radius=None, v_pref=None):
         if isinstance(human.policy, SF):
             # for sf, vx & vy must be initiated at v_pref
@@ -247,7 +271,7 @@ class CrowdSim(gym.Env):
         else:
             vx, vy, theta = 0, 0, 0
         human.set(px, py, -px, -py, vx, vy, theta)
-        return human
+        return human, fail
 
     def generate_square_crossing_human(self):
         human = Human(self.config, 'humans')
@@ -257,7 +281,12 @@ class CrowdSim(gym.Env):
             sign = -1
         else:
             sign = 1
-        while True:
+
+        fail = False
+        ctr1 = 0
+        attempt_limit = 1500
+        while True and ctr1 < attempt_limit:
+            ctr1 += 1
             px = np.random.random() * self.square_width * 0.5 * sign
             py = (np.random.random() - 0.5) * self.square_width
             collide = False
@@ -267,7 +296,9 @@ class CrowdSim(gym.Env):
                     break
             if not collide:
                 break
-        while True:
+        ctr2 = 0
+        while True and ctr2 < attempt_limit:
+            ctr2 += 1
             gx = np.random.random() * self.square_width * 0.5 * -sign
             gy = (np.random.random() - 0.5) * self.square_width
             collide = False
@@ -277,6 +308,8 @@ class CrowdSim(gym.Env):
                     break
             if not collide:
                 break
+        logging.debug(f'Square counter: {max(ctr1, ctr2)}')
+        fail = (ctr1 >= attempt_limit) or (ctr2 >= attempt_limit)
 
         # TODO: MAKE HUMAN GOALS MORE INTERESTING
         #       - goals are currently simply opposite side of circle
@@ -294,7 +327,7 @@ class CrowdSim(gym.Env):
             vx, vy, theta = 0, 0, 0
         human.set(px, py, gx, gy, vx, vy, theta)
         #human.set(px, py, gx, gy, 0, 0, 0)
-        return human
+        return human, fail
 
     def get_human_times(self):
         """
@@ -343,6 +376,7 @@ class CrowdSim(gym.Env):
         Set px, py, gx, gy, vx, vy, theta for robot and humans
         :return: observation of robot [observable_state_human_0, ... ]
         """
+
         if self.robot is None:
             raise AttributeError('robot has to be set!')
         assert phase in ['train', 'val', 'test']
@@ -352,15 +386,27 @@ class CrowdSim(gym.Env):
         if phase == 'test':
             # humans all start at time 0
             self.human_times = [0] * self.human_num
-        else:
+            #crossing_type = self.test_sim
+        else: # phase == 'train' or 'val'
             # [0,0,....,0] if training with multiple humans; [0] if training with one (IL)
             self.human_times = [0] * (self.human_num if self.robot.policy.multiagent_training else 1)
+            #crossing_type = self.train_val_sim
+
+        # ADAM: if not multiagent setting, set env to circle_crossing... why tho?
         if not self.robot.policy.multiagent_training:
             self.train_val_sim = 'circle_crossing'
+            #crossing_type = self.train_val_sim
+
+        ## ADAM: IF I WANT GOAL TO ALWAYS BE ON OTHER EDGE OF CROSSING.
+        #       Currently, it is always on other edge of *hypothetical* circle.
+        # if crossing_type == 'circle_crossing':
+        #     r = self.circle_radius + 1
+        #     # ADAM: border circle
+        # elif crossing_type == 'square_crossing':
+        #     r = (self.square_width // 2) + 1
 
         if self.config.get('humans', 'policy') == 'trajnet':
             raise NotImplementedError
-
         # if human policy is orca TODO: CHANGE
         else:
             counter_offset = {'train': self.case_capacity['val'] + self.case_capacity['test'],
@@ -386,7 +432,6 @@ class CrowdSim(gym.Env):
                     self.humans[2].set(5, -5, 5, 5, 0, 0, np.pi / 2)
                 else:
                     raise NotImplementedError
-
         # define time step duration
         for agent in [self.robot] + self.humans:
             agent.time_step = self.time_step
@@ -504,21 +549,21 @@ class CrowdSim(gym.Env):
             elif closest_dist < dmin:
                 dmin = closest_dist
 
-        # collision detection between humans
-        human_num = len(self.humans)
-        for i in range(human_num):
-            for j in range(i + 1, human_num):
-                dx = self.humans[i].px - self.humans[j].px
-                dy = self.humans[i].py - self.humans[j].py
-                dist = (dx ** 2 + dy ** 2) ** (1 / 2) - self.humans[i].radius - self.humans[j].radius
-                if dist < 0:
-                    # detect collision but don't take humans' collision into account
-                    logging.debug('Collision happens between humans in step()')
+        ## ADAM: TURNED OFF FOR NOW
+        ## collision detection between humans
+        #human_num = len(self.humans)
+        # for i in range(human_num):
+        #     for j in range(i + 1, human_num):
+        #         dx = self.humans[i].px - self.humans[j].px
+        #         dy = self.humans[i].py - self.humans[j].py
+        #         dist = (dx ** 2 + dy ** 2) ** (1 / 2) - self.humans[i].radius - self.humans[j].radius
+        #         if dist < 0:
+        #             # detect collision but don't take humans' collision into account
+        #             logging.debug('Collision happens between humans in step()')
 
         # check if robot reaching the goal
         end_position = np.array(self.robot.compute_position(action, self.time_step))
         reaching_goal = norm(end_position - np.array(self.robot.get_goal_position())) < self.robot.radius
-
         if self.global_time >= self.time_limit - 1:
             reward = 0
             done = True
@@ -575,9 +620,9 @@ class CrowdSim(gym.Env):
             elif self.robot.sensor == 'RGB':
                 raise NotImplementedError
 
-        return ob, reward, done, info
+        return ob, reward, done, info#, dmin
 
-    def render(self, mode='human', output_file=None):
+    def render(self, mode='human', output_file=None, phase='test', hide_attn=False, show_border=False):
         from matplotlib import animation
         import matplotlib.pyplot as plt
         plt.rcParams['animation.ffmpeg_path'] = '/usr/bin/ffmpeg'
@@ -585,25 +630,52 @@ class CrowdSim(gym.Env):
         x_offset = 0.11
         y_offset = 0.11
         cmap = plt.cm.get_cmap('hsv', 10)
-        robot_color = 'yellow'
+        robot_color = 'yellow' #'cyan'
         goal_color = 'red'
         arrow_color = 'red'
         arrow_style = patches.ArrowStyle("->", head_length=4, head_width=2)
 
+        # Make output size depend on radius or width of env:
+        fig, ax = plt.subplots(figsize=(8, 8))
+        if phase == 'test':
+            crossing_type = self.test_sim
+        elif phase == 'train' or phase == 'val':
+            crossing_type = self.train_val_sim
+        else:
+            raise NotImplementedError(f"Phase must be one of 'test', 'val, or 'train'. String given: '{phase}'")
+
+        if crossing_type == 'circle_crossing':
+            r = self.circle_radius + 1
+            # ADAM: border circle
+            if show_border:
+                border = plt.Circle((0,0), self.circle_radius, fill=False, color='gray')
+                ax.add_artist(border)
+        elif crossing_type == 'square_crossing':
+            r = (self.square_width // 2) + 1
+            if show_border:
+                border = plt.Rectangle((-r+1,-r+1), self.square_width, self.square_width, fill=False, color='gray')
+                ax.add_artist(border)
+        else:
+            raise NotImplementedError(f"{phase}_sim must be one of 'circle_crossing' or 'square_crossing'. String given: '{crossing_type}'")
+        # Assign new figure limits:
+        ax.set_xlim(-r, r)
+        ax.set_ylim(-r, r)
+
+
         if mode == 'human':
-            fig, ax = plt.subplots(figsize=(7, 7))
-            ax.set_xlim(-4, 4)
-            ax.set_ylim(-4, 4)
+            # fig, ax = plt.subplots(figsize=(7, 7))
+            # ax.set_xlim(-4, 4)
+            # ax.set_ylim(-4, 4)
             for human in self.humans:
                 human_circle = plt.Circle(human.get_position(), human.radius, fill=False, color='b')
                 ax.add_artist(human_circle)
             ax.add_artist(plt.Circle(self.robot.get_position(), self.robot.radius, fill=True, color='r'))
             plt.show()
         elif mode == 'traj':
-            fig, ax = plt.subplots(figsize=(7, 7))
+            #fig, ax = plt.subplots(figsize=(7, 7))
             ax.tick_params(labelsize=16)
-            ax.set_xlim(-5, 5)
-            ax.set_ylim(-5, 5)
+            #ax.set_xlim(-5, 5)
+            #ax.set_ylim(-5, 5)
             ax.set_xlabel('x(m)', fontsize=16)
             ax.set_ylabel('y(m)', fontsize=16)
 
@@ -641,17 +713,22 @@ class CrowdSim(gym.Env):
             plt.legend([robot], ['Robot'], fontsize=16)
             plt.show()
         elif mode == 'video':
-            fig, ax = plt.subplots(figsize=(7, 7))
+            #fig, ax = plt.subplots(figsize=(7, 7))
             ax.tick_params(labelsize=16)
-            ax.set_xlim(-6, 6)
-            ax.set_ylim(-6, 6)
+            #ax.set_xlim(-6, 6)
+            #ax.set_ylim(-6, 6)
             ax.set_xlabel('x(m)', fontsize=16)
             ax.set_ylabel('y(m)', fontsize=16)
 
             # add robot and its goal
             robot_positions = [state[0].position for state in self.states]
-            goal = mlines.Line2D([0], [4], color=goal_color, marker='*', linestyle='None', markersize=15, label='Goal')
+            # ADAM: GOAL WAS PREVIOUSLY STATIC AT [0], [4]
+            logging.debug(f'Goal: ({self.robot.gx},{self.robot.gy})')
+            goal = mlines.Line2D([self.robot.gx], [self.robot.gy], color=goal_color, marker='*', linestyle='None', markersize=15, label='Goal')
             robot = plt.Circle(robot_positions[0], self.robot.radius, fill=True, color=robot_color)
+
+
+
             ax.add_artist(robot)
             ax.add_artist(goal)
             plt.legend([robot, goal], ['Robot', 'Goal'], fontsize=16)
@@ -667,14 +744,19 @@ class CrowdSim(gym.Env):
                 ax.add_artist(human_numbers[i])
 
             # add time annotation
-            time = plt.text(-1, 5, 'Time: {}'.format(0), fontsize=16)
+            time = plt.text(-1, r+1, 'Time: {}'.format(0), fontsize=16)
             ax.add_artist(time)
 
             # compute attention scores
-            if self.attention_weights is not None:
+            if (self.attention_weights is not None) and (not hide_attn):
                 attention_scores = [
-                    plt.text(-5.5, 5 - 0.5 * i, 'Human {}: {:.2f}'.format(i + 1, self.attention_weights[0][i]),
-                             fontsize=16) for i in range(len(self.humans))]
+                    # ADAM: formerly (-5.5, 5, ...)
+                    # plt.text((-r+0.2), (r-0.3) - 0.3 * i, 'Human {}: {:.2f}'.format(i + 1, self.attention_weights[0][i]),
+                    #          fontsize=12) for i in range(len(self.humans))]
+                    plt.text((-r+0.2), (r-0.3) - 0.3 * i, "$α_{" + str(i) + "}$: " + f"{self.attention_weights[0][i]:.2f}",
+                             fontsize=12) for i in range(len(self.humans))]
+                    #attention_scores[i].set_text()
+
 
             # compute orientation in each step and use arrow to show the direction
             radius = self.robot.radius
@@ -716,9 +798,11 @@ class CrowdSim(gym.Env):
                                                       arrowstyle=arrow_style) for orientation in orientations]
                     for arrow in arrows:
                         ax.add_artist(arrow)
-                    if self.attention_weights is not None:
+                    # ADAM: rewrite attention weights
+                    if (self.attention_weights is not None) and (not hide_attn):
                         human.set_color(str(self.attention_weights[frame_num][i]))
-                        attention_scores[i].set_text('human {}: {:.2f}'.format(i, self.attention_weights[frame_num][i]))
+                        #attention_scores[i].set_text('human {}: {:.2f}'.format(i, self.attention_weights[frame_num][i]))
+                        attention_scores[i].set_text("$α_{" + str(i) + "}$: " + f"{self.attention_weights[frame_num][i]:.2f}")
 
                 time.set_text('Time: {:.2f}'.format(frame_num * self.time_step))
 
@@ -762,6 +846,7 @@ class CrowdSim(gym.Env):
                 ffmpeg_writer = animation.writers['ffmpeg']
                 writer = ffmpeg_writer(fps=8, metadata=dict(artist='Me'), bitrate=1800)
                 anim.save(output_file, writer=writer)
+                plt.show()
             else:
                 plt.show()
         else:

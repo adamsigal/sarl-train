@@ -27,9 +27,16 @@ def main():
     parser.add_argument('--circle', default=False, action='store_true')
     parser.add_argument('--video_file', type=str, default=None)
     parser.add_argument('--traj', default=False, action='store_true')
+    parser.add_argument('--results_dir', type=str, default=None)
+    parser.add_argument('--hide_attn', default=False, action='store_true')
+    parser.add_argument('--show_border', default=False, action='store_true')
     args = parser.parse_args()
 
+
     if args.model_dir is not None:
+        # if we have model_dir, but no results_dir
+        if args.results_dir is None:
+            args.results_dir = os.path.join(args.model_dir, 'eval')
         ## XXX: I changed this; weird behaviour. Why wouldn't you look in specified config?
         # env_config_file = os.path.join(args.model_dir, os.path.basename(args.env_config))
         # policy_config_file = os.path.join(args.model_dir, os.path.basename(args.policy_config))
@@ -41,10 +48,15 @@ def main():
             else:
                 model_weights = os.path.join(args.model_dir, 'rl_model.pth')
     #else:
+    # if outputting results file, create dir if it doesn't exist
+    if args.results_dir is not None:
+        if not os.path.exists(args.results_dir):
+            os.makedirs(args.results_dir)
     env_config_file = args.env_config
     policy_config_file = args.policy_config
 
     # configure logging and device
+    # ADAM                    logging.DEBUG
     logging.basicConfig(level=logging.INFO, format='%(asctime)s, %(levelname)s: %(message)s',
                         datefmt="%Y-%m-%d %H:%M:%S")
     device = torch.device("cuda:0" if torch.cuda.is_available() and args.gpu else "cpu")
@@ -62,7 +74,7 @@ def main():
 
     # configure environment
     env_config = configparser.RawConfigParser()
-    print('\nenv_config_file:', env_config_file, "\n")
+    logging.info(f'Env config file: {env_config_file}')
     env_config.read(env_config_file)
     env = gym.make('CrowdSim-v0')
 
@@ -109,18 +121,21 @@ def main():
             logging.debug('Speed: %.2f', np.linalg.norm(current_pos - last_pos) / robot.time_step)
             last_pos = current_pos
         if args.traj:
-            env.render('traj', args.video_file)
+            env.render('traj', args.video_file, phase=args.phase, show_border=args.show_border)
         else:
-            env.render('video', args.video_file)
+            env.render('video', args.video_file, phase=args.phase, hide_attn=args.hide_attn, show_border=args.show_border)
 
         logging.info('It takes %.2f seconds to finish. Final status is %s', env.global_time, info)
         if robot.visible and info == 'reach goal':
             human_times = env.get_human_times()
-            logging.info('Average time for humans to reach goal: %.2f', sum(human_times) / len(human_times))
+            # ADAM
+            #logging.info('Average time for humans to reach goal: %.2f', sum(human_times) / len(human_times))
+            logging.info(f'Average time for humans to reach goal: {sum(human_times) / len(human_times):.2f} (std: {np.std(human_times)})')
+            #logging.info('                   Standard deviation: %.3f', np.std(human_times))
 
     # ADAM: RUNNING TESTING FOR K EPISODES
     else:
-        explorer.run_k_episodes(env.case_size[args.phase], args.phase, print_failure=True)
+        explorer.run_k_episodes(env.case_size[args.phase], args.phase, results_dir=args.results_dir)
 
 
 if __name__ == '__main__':

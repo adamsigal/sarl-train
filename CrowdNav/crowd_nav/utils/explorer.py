@@ -2,6 +2,10 @@ import logging
 import copy
 import torch
 from crowd_sim.envs.utils.info import *
+from crowd_sim.envs.utils.utils import write_results, get_env_code
+import numpy as np
+import time
+import os
 
 
 class Explorer(object):
@@ -19,7 +23,7 @@ class Explorer(object):
 
     # @profile
     def run_k_episodes(self, k, phase, update_memory=False, imitation_learning=False, episode=None,
-                       print_failure=False):
+                       print_test=True, results_dir=None):
         self.robot.policy.set_phase(phase)
         success_times = []
         collision_times = []
@@ -29,25 +33,39 @@ class Explorer(object):
         timeout = 0
         too_close = 0
         min_dist = []
+        #all_min_dist = []
         cumulative_rewards = []
         collision_cases = []
         timeout_cases = []
         for i in range(k):
+            epoch_start = time.perf_counter()
             ob = self.env.reset(phase)
             done = False
             states = []
             actions = []
             rewards = []
+            logging.debug(f'i: {i}')
+            #episode_dmin = float('inf')
+            #episode_dist = []
             while not done:
                 action = self.robot.act(ob)
+                #                     , step_dmin
                 ob, reward, done, info = self.env.step(action)
                 states.append(self.robot.policy.last_state)
                 actions.append(action)
                 rewards.append(reward)
-
+                # if step_dmin < episode_dmin:
+                #     episode_dmin = step_dmin
+                # if step_dmin != float('inf'):
+                #     episode_dist.append(step_dmin)
                 if isinstance(info, Danger):
                     too_close += 1
                     min_dist.append(info.min_dist)
+
+            # if not isinstance(info, Collision):
+            #     # ADAM: I now keep track of dmin in all non-collision cases,
+            #     # even though it kind of messes with the scheme they were using
+            #     all_min_dist.append(np.mean(episode_dist))
 
             if isinstance(info, ReachGoal):
                 success += 1
@@ -71,23 +89,69 @@ class Explorer(object):
             cumulative_rewards.append(sum([pow(self.gamma, t * self.robot.time_step * self.robot.v_pref)
                                            * reward for t, reward in enumerate(rewards)]))
 
+            # print first 10, then every 10% milestone, then last 3
+            if (
+                    print_test and
+                    phase.lower() == 'test' and
+                    (
+                        i < 100 or
+                        i % (k//10) == 0 or
+                        i > k-4
+                    )
+                ):
+                ep_str = str(i).zfill(int(np.log10(k-1))+1)
+                epoch_diff = time.perf_counter() - epoch_start
+                logging.debug(f'Test Episode {ep_str}/{k-1}    Time: [{time.strftime("%H:%M:%S", time.gmtime(epoch_diff))}]')
+
         success_rate = success / k
+        #success_std = np.std(success)
+
         collision_rate = collision / k
+        #collision_std = np.std(collision_rate)
+
         assert success + collision + timeout == k
+
         avg_nav_time = sum(success_times) / len(success_times) if success_times else self.env.time_limit
+        std_nav_time = np.std(success_times)
+
+        std_cumul_rewards = np.std(cumulative_rewards)
+
 
         extra_info = '' if episode is None else 'in episode {} '.format(episode)
-        logging.info('{:<5} {}has success rate: {:.2f}, collision rate: {:.2f}, nav time: {:.2f}, total reward: {:.4f}'.
+        # logging.info('{:<5} {}has success rate: {:.2f}, collision rate: {:.2f}, nav time: {:.2f} (std: {:.2f}), total reward: {:.4f} (std: {:.4f})'.
+        #              format(phase.upper(), extra_info, success_rate, collision_rate, avg_nav_time, std_nav_time,
+        #                     average(cumulative_rewards), std_cumul_rewards))
+        logging.info('{:<5} {}has success rate: {:.2f}, collision rate: {:.2f}, nav time: {:.2f}, total reward: {:.4f})'.
                      format(phase.upper(), extra_info, success_rate, collision_rate, avg_nav_time,
                             average(cumulative_rewards)))
+
+
         if phase in ['val', 'test']:
             num_step = sum(success_times + collision_times + timeout_times) / self.robot.time_step
-            logging.info('Frequency of being in danger: %.2f and average min separate distance in danger: %.2f',
-                         too_close / num_step, average(min_dist))
+            #logging.info('Frequency of being in danger: %.2f and average min separate distance in danger: %.2f (std: %.2f)', too_close / num_step, average(min_dist), np.std(min_dist))
+            logging.info('Frequency of being in danger: %.2f and average min separate distance in danger: %.2f', too_close / num_step, average(min_dist))
 
-        if print_failure:
-            logging.info('Collision cases: ' + ' '.join([str(x) for x in collision_cases]))
-            logging.info('Timeout cases: ' + ' '.join([str(x) for x in timeout_cases]))
+        # array of [env, succ, coll, time, std_time, rew, std_rew, disc_freq,
+        #           danger_d_min, std_danger, d_min_overall, std_overall]
+        if results_dir is not None:                 #TODO: CHANGE BACK TO RESULTS.CSV
+            results_path = os.path.join(results_dir, 'results-orca.csv')
+            logging.info(f"results_path: {results_path}")
+            env_code = get_env_code(self.env, phase)
+            results = [
+                env_code,
+                success_rate,
+                collision_rate,
+                avg_nav_time,
+                std_nav_time,
+                average(cumulative_rewards),
+                std_cumul_rewards,
+                too_close / num_step,
+                average(min_dist),
+                np.std(min_dist)
+                # average(all_min_dist),
+                # np.std(all_min_dist)
+            ]
+            write_results(results_path, results)
 
     def update_memory(self, states, actions, rewards, imitation_learning=False):
         if self.memory is None or self.gamma is None:
@@ -126,6 +190,7 @@ class Explorer(object):
 
 
 def average(input_list):
+    #logging.debug(f'Input list:\n{input_list}')
     if input_list:
         return sum(input_list) / len(input_list)
     else:

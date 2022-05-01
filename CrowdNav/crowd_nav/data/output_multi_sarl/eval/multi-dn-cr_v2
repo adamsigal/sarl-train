@@ -1,0 +1,390 @@
+2022-04-26 20:37:50, INFO: Using device: cpu
+2022-04-26 20:37:50, INFO: Policy: SARL w/ global state
+/home/sigal/Documents/2022-meng/sarl-train/venv/lib/python3.6/site-packages/gym/envs/registration.py:14: PkgResourcesDeprecationWarning: Parameters to load are deprecated.  Call .resolve and .require separately.
+  result = entry_point.load(False)
+2022-04-26 20:37:50, INFO: human number: 10
+2022-04-26 20:37:50, INFO: Randomizing human radius and preferred speed
+2022-04-26 20:37:50, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2022-04-26 20:37:50, INFO: Square width: 10.0, circle width: 4.0
+2022-04-26 20:37:50, INFO: Agent is visible and has holonomic kinematic constraint
+2022-04-26 20:37:50, DEBUG: i: 0
+2022-04-26 20:37:54, DEBUG: Test Episode 00/29    Time: [00:00:04]
+2022-04-26 20:37:54, DEBUG: i: 1
+2022-04-26 20:37:59, DEBUG: Test Episode 01/29    Time: [00:00:04]
+2022-04-26 20:37:59, DEBUG: i: 2
+2022-04-26 20:38:03, DEBUG: Test Episode 02/29    Time: [00:00:03]
+2022-04-26 20:38:03, DEBUG: i: 3
+2022-04-26 20:38:07, DEBUG: Test Episode 03/29    Time: [00:00:04]
+2022-04-26 20:38:07, DEBUG: i: 4
+2022-04-26 20:38:11, DEBUG: Test Episode 04/29    Time: [00:00:03]
+2022-04-26 20:38:11, DEBUG: i: 5
+2022-04-26 20:38:14, DEBUG: Test Episode 05/29    Time: [00:00:03]
+2022-04-26 20:38:14, DEBUG: i: 6
+2022-04-26 20:38:19, DEBUG: Test Episode 06/29    Time: [00:00:04]
+2022-04-26 20:38:19, DEBUG: i: 7
+2022-04-26 20:38:24, DEBUG: Test Episode 07/29    Time: [00:00:04]
+2022-04-26 20:38:24, DEBUG: i: 8
+2022-04-26 20:38:27, DEBUG: Test Episode 08/29    Time: [00:00:03]
+2022-04-26 20:38:27, DEBUG: i: 9
+2022-04-26 20:38:31, DEBUG: Test Episode 09/29    Time: [00:00:03]
+2022-04-26 20:38:31, DEBUG: i: 10
+2022-04-26 20:38:35, DEBUG: Test Episode 10/29    Time: [00:00:03]
+2022-04-26 20:38:35, DEBUG: i: 11
+2022-04-26 20:38:38, DEBUG: Test Episode 11/29    Time: [00:00:03]
+2022-04-26 20:38:38, DEBUG: i: 12
+2022-04-26 20:38:42, DEBUG: Test Episode 12/29    Time: [00:00:03]
+2022-04-26 20:38:42, DEBUG: i: 13
+2022-04-26 20:38:48, DEBUG: Test Episode 13/29    Time: [00:00:06]
+2022-04-26 20:38:48, DEBUG: i: 14
+2022-04-26 20:38:52, DEBUG: Test Episode 14/29    Time: [00:00:03]
+2022-04-26 20:38:52, DEBUG: Too many attempts at placing human. Retrying from the start.
+2022-04-26 20:38:52, DEBUG: Attempt counter: 1500
+2022-04-26 20:38:52, DEBUG: i: 15
+2022-04-26 20:38:57, DEBUG: Test Episode 15/29    Time: [00:00:05]
+2022-04-26 20:38:57, DEBUG: i: 16
+2022-04-26 20:39:05, DEBUG: Test Episode 16/29    Time: [00:00:07]
+2022-04-26 20:39:05, DEBUG: i: 17
+2022-04-26 20:39:09, DEBUG: Test Episode 17/29    Time: [00:00:03]
+2022-04-26 20:39:09, DEBUG: i: 18
+2022-04-26 20:39:14, DEBUG: Test Episode 18/29    Time: [00:00:04]
+2022-04-26 20:39:14, DEBUG: i: 19
+2022-04-26 20:39:17, DEBUG: Test Episode 19/29    Time: [00:00:03]
+2022-04-26 20:39:17, DEBUG: Human #0
+2022-04-26 20:39:17, DEBUG: curr # of agents: 1
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Human #1
+2022-04-26 20:39:17, DEBUG: curr # of agents: 2
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Human #2
+2022-04-26 20:39:17, DEBUG: curr # of agents: 3
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Human #3
+2022-04-26 20:39:17, DEBUG: curr # of agents: 4
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Human #4
+2022-04-26 20:39:17, DEBUG: curr # of agents: 5
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Human #5
+2022-04-26 20:39:17, DEBUG: curr # of agents: 6
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Human #6
+2022-04-26 20:39:17, DEBUG: curr # of agents: 7
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Human #7
+2022-04-26 20:39:17, DEBUG: curr # of agents: 8
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Human #8
+2022-04-26 20:39:17, DEBUG: curr # of agents: 9
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Human #9
+2022-04-26 20:39:17, DEBUG: curr # of agents: 10
+2022-04-26 20:39:17, DEBUG: Too many attempts at placing human. Retrying from the start.
+2022-04-26 20:39:17, DEBUG: Attempt counter: 1500
+2022-04-26 20:39:17, DEBUG: Circle
+2022-04-26 20:39:17, DEBUG: Hellote
+2022-04-26 20:39:17, DEBUG: i: 20
+2022-04-26 20:39:21, DEBUG: Test Episode 20/29    Time: [00:00:03]
+2022-04-26 20:39:21, DEBUG: Human #0
+2022-04-26 20:39:21, DEBUG: curr # of agents: 1
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Human #1
+2022-04-26 20:39:21, DEBUG: curr # of agents: 2
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Human #2
+2022-04-26 20:39:21, DEBUG: curr # of agents: 3
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Human #3
+2022-04-26 20:39:21, DEBUG: curr # of agents: 4
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Human #4
+2022-04-26 20:39:21, DEBUG: curr # of agents: 5
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Human #5
+2022-04-26 20:39:21, DEBUG: curr # of agents: 6
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Human #6
+2022-04-26 20:39:21, DEBUG: curr # of agents: 7
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Human #7
+2022-04-26 20:39:21, DEBUG: curr # of agents: 8
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Human #8
+2022-04-26 20:39:21, DEBUG: curr # of agents: 9
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Human #9
+2022-04-26 20:39:21, DEBUG: curr # of agents: 10
+2022-04-26 20:39:21, DEBUG: Circle
+2022-04-26 20:39:21, DEBUG: Hellote
+2022-04-26 20:39:21, DEBUG: i: 21
+2022-04-26 20:39:26, DEBUG: Test Episode 21/29    Time: [00:00:05]
+2022-04-26 20:39:26, DEBUG: Human #0
+2022-04-26 20:39:26, DEBUG: curr # of agents: 1
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Human #1
+2022-04-26 20:39:26, DEBUG: curr # of agents: 2
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Human #2
+2022-04-26 20:39:26, DEBUG: curr # of agents: 3
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Human #3
+2022-04-26 20:39:26, DEBUG: curr # of agents: 4
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Human #4
+2022-04-26 20:39:26, DEBUG: curr # of agents: 5
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Human #5
+2022-04-26 20:39:26, DEBUG: curr # of agents: 6
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Human #6
+2022-04-26 20:39:26, DEBUG: curr # of agents: 7
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Human #7
+2022-04-26 20:39:26, DEBUG: curr # of agents: 8
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Human #8
+2022-04-26 20:39:26, DEBUG: curr # of agents: 9
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Human #9
+2022-04-26 20:39:26, DEBUG: curr # of agents: 10
+2022-04-26 20:39:26, DEBUG: Circle
+2022-04-26 20:39:26, DEBUG: Hellote
+2022-04-26 20:39:26, DEBUG: i: 22
+2022-04-26 20:39:31, DEBUG: Test Episode 22/29    Time: [00:00:04]
+2022-04-26 20:39:31, DEBUG: Human #0
+2022-04-26 20:39:31, DEBUG: curr # of agents: 1
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Human #1
+2022-04-26 20:39:31, DEBUG: curr # of agents: 2
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Human #2
+2022-04-26 20:39:31, DEBUG: curr # of agents: 3
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Human #3
+2022-04-26 20:39:31, DEBUG: curr # of agents: 4
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Human #4
+2022-04-26 20:39:31, DEBUG: curr # of agents: 5
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Human #5
+2022-04-26 20:39:31, DEBUG: curr # of agents: 6
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Human #6
+2022-04-26 20:39:31, DEBUG: curr # of agents: 7
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Human #7
+2022-04-26 20:39:31, DEBUG: curr # of agents: 8
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Human #8
+2022-04-26 20:39:31, DEBUG: curr # of agents: 9
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Human #9
+2022-04-26 20:39:31, DEBUG: curr # of agents: 10
+2022-04-26 20:39:31, DEBUG: Circle
+2022-04-26 20:39:31, DEBUG: Hellote
+2022-04-26 20:39:31, DEBUG: i: 23
+2022-04-26 20:39:35, DEBUG: Test Episode 23/29    Time: [00:00:03]
+2022-04-26 20:39:35, DEBUG: Human #0
+2022-04-26 20:39:35, DEBUG: curr # of agents: 1
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Human #1
+2022-04-26 20:39:35, DEBUG: curr # of agents: 2
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Human #2
+2022-04-26 20:39:35, DEBUG: curr # of agents: 3
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Human #3
+2022-04-26 20:39:35, DEBUG: curr # of agents: 4
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Human #4
+2022-04-26 20:39:35, DEBUG: curr # of agents: 5
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Human #5
+2022-04-26 20:39:35, DEBUG: curr # of agents: 6
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Human #6
+2022-04-26 20:39:35, DEBUG: curr # of agents: 7
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Human #7
+2022-04-26 20:39:35, DEBUG: curr # of agents: 8
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Human #8
+2022-04-26 20:39:35, DEBUG: curr # of agents: 9
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Human #9
+2022-04-26 20:39:35, DEBUG: curr # of agents: 10
+2022-04-26 20:39:35, DEBUG: Circle
+2022-04-26 20:39:35, DEBUG: Hellote
+2022-04-26 20:39:35, DEBUG: i: 24
+2022-04-26 20:39:38, DEBUG: Test Episode 24/29    Time: [00:00:03]
+2022-04-26 20:39:38, DEBUG: Human #0
+2022-04-26 20:39:38, DEBUG: curr # of agents: 1
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Human #1
+2022-04-26 20:39:38, DEBUG: curr # of agents: 2
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Human #2
+2022-04-26 20:39:38, DEBUG: curr # of agents: 3
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Human #3
+2022-04-26 20:39:38, DEBUG: curr # of agents: 4
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Human #4
+2022-04-26 20:39:38, DEBUG: curr # of agents: 5
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Human #5
+2022-04-26 20:39:38, DEBUG: curr # of agents: 6
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Human #6
+2022-04-26 20:39:38, DEBUG: curr # of agents: 7
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Human #7
+2022-04-26 20:39:38, DEBUG: curr # of agents: 8
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Human #8
+2022-04-26 20:39:38, DEBUG: curr # of agents: 9
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Human #9
+2022-04-26 20:39:38, DEBUG: curr # of agents: 10
+2022-04-26 20:39:38, DEBUG: Circle
+2022-04-26 20:39:38, DEBUG: Hellote
+2022-04-26 20:39:38, DEBUG: i: 25
+2022-04-26 20:39:42, DEBUG: Test Episode 25/29    Time: [00:00:03]
+2022-04-26 20:39:42, DEBUG: Human #0
+2022-04-26 20:39:42, DEBUG: curr # of agents: 1
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Human #1
+2022-04-26 20:39:42, DEBUG: curr # of agents: 2
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Human #2
+2022-04-26 20:39:42, DEBUG: curr # of agents: 3
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Human #3
+2022-04-26 20:39:42, DEBUG: curr # of agents: 4
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Human #4
+2022-04-26 20:39:42, DEBUG: curr # of agents: 5
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Human #5
+2022-04-26 20:39:42, DEBUG: curr # of agents: 6
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Human #6
+2022-04-26 20:39:42, DEBUG: curr # of agents: 7
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Human #7
+2022-04-26 20:39:42, DEBUG: curr # of agents: 8
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Human #8
+2022-04-26 20:39:42, DEBUG: curr # of agents: 9
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Human #9
+2022-04-26 20:39:42, DEBUG: curr # of agents: 10
+2022-04-26 20:39:42, DEBUG: Circle
+2022-04-26 20:39:42, DEBUG: Hellote
+2022-04-26 20:39:42, DEBUG: i: 26
+2022-04-26 20:39:46, DEBUG: Test Episode 26/29    Time: [00:00:03]
+2022-04-26 20:39:46, DEBUG: Human #0
+2022-04-26 20:39:46, DEBUG: curr # of agents: 1
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Human #1
+2022-04-26 20:39:46, DEBUG: curr # of agents: 2
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Human #2
+2022-04-26 20:39:46, DEBUG: curr # of agents: 3
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Human #3
+2022-04-26 20:39:46, DEBUG: curr # of agents: 4
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Human #4
+2022-04-26 20:39:46, DEBUG: curr # of agents: 5
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Human #5
+2022-04-26 20:39:46, DEBUG: curr # of agents: 6
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Human #6
+2022-04-26 20:39:46, DEBUG: curr # of agents: 7
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Human #7
+2022-04-26 20:39:46, DEBUG: curr # of agents: 8
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Human #8
+2022-04-26 20:39:46, DEBUG: curr # of agents: 9
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Human #9
+2022-04-26 20:39:46, DEBUG: curr # of agents: 10
+2022-04-26 20:39:46, DEBUG: Circle
+2022-04-26 20:39:46, DEBUG: Hellote
+2022-04-26 20:39:46, DEBUG: i: 27
+2022-04-26 20:39:50, DEBUG: Test Episode 27/29    Time: [00:00:03]
+2022-04-26 20:39:50, DEBUG: Human #0
+2022-04-26 20:39:50, DEBUG: curr # of agents: 1
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Human #1
+2022-04-26 20:39:50, DEBUG: curr # of agents: 2
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Human #2
+2022-04-26 20:39:50, DEBUG: curr # of agents: 3
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Human #3
+2022-04-26 20:39:50, DEBUG: curr # of agents: 4
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Human #4
+2022-04-26 20:39:50, DEBUG: curr # of agents: 5
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Human #5
+2022-04-26 20:39:50, DEBUG: curr # of agents: 6
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Human #6
+2022-04-26 20:39:50, DEBUG: curr # of agents: 7
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Human #7
+2022-04-26 20:39:50, DEBUG: curr # of agents: 8
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Human #8
+2022-04-26 20:39:50, DEBUG: curr # of agents: 9
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Human #9
+2022-04-26 20:39:50, DEBUG: curr # of agents: 10
+2022-04-26 20:39:50, DEBUG: Circle
+2022-04-26 20:39:50, DEBUG: Hellote
+2022-04-26 20:39:50, DEBUG: i: 28
+2022-04-26 20:39:54, DEBUG: Test Episode 28/29    Time: [00:00:03]
+2022-04-26 20:39:54, DEBUG: Human #0
+2022-04-26 20:39:54, DEBUG: curr # of agents: 1
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Human #1
+2022-04-26 20:39:54, DEBUG: curr # of agents: 2
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Human #2
+2022-04-26 20:39:54, DEBUG: curr # of agents: 3
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Human #3
+2022-04-26 20:39:54, DEBUG: curr # of agents: 4
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Human #4
+2022-04-26 20:39:54, DEBUG: curr # of agents: 5
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Human #5
+2022-04-26 20:39:54, DEBUG: curr # of agents: 6
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Human #6
+2022-04-26 20:39:54, DEBUG: curr # of agents: 7
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Human #7
+2022-04-26 20:39:54, DEBUG: curr # of agents: 8
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Human #8
+2022-04-26 20:39:54, DEBUG: curr # of agents: 9
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Human #9
+2022-04-26 20:39:54, DEBUG: curr # of agents: 10
+2022-04-26 20:39:54, DEBUG: Circle
+2022-04-26 20:39:54, DEBUG: Hellote
+2022-04-26 20:39:54, DEBUG: i: 29
+2022-04-26 20:40:00, DEBUG: Test Episode 29/29    Time: [00:00:06]
+2022-04-26 20:40:00, INFO: TEST  has success rate: 0.93 (std: 0.0), collision rate: 0.07 (std: 0.0), nav time: 9.73 (std: 0.3164774572692359), total reward: 0.1678
+2022-04-26 20:40:00, INFO: Frequency of being in danger: 0.16 and average min separate distance in danger: 0.11
+2022-04-26 20:40:00, INFO: Collision cases: 2 12
+2022-04-26 20:40:00, INFO: Timeout cases: 
+
+env_config_file: configs/env_tmp.config 
+

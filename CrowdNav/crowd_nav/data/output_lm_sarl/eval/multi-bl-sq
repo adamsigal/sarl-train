@@ -1,0 +1,15 @@
+2022-04-29 12:35:07, INFO: Using device: cpu
+2022-04-29 12:35:07, INFO: Policy: SARL w/ global state
+2022-04-29 12:35:09, INFO: Env config file: configs/env_multi-test_bl-sq.config
+/home/sigal/Documents/2022-meng/sarl-train/venv/lib/python3.6/site-packages/gym/envs/registration.py:14: PkgResourcesDeprecationWarning: Parameters to load are deprecated.  Call .resolve and .require separately.
+  result = entry_point.load(False)
+2022-04-29 12:35:09, INFO: human number: 5
+2022-04-29 12:35:09, INFO: Randomizing human radius and preferred speed
+2022-04-29 12:35:09, INFO: Training simulation: square_crossing, test simulation: square_crossing
+2022-04-29 12:35:09, INFO: Square width: 10.0, circle width: 4.0
+2022-04-29 12:35:09, INFO: Agent is visible and has holonomic kinematic constraint
+2022-04-29 12:37:40, INFO: TEST  has success rate: 0.98, collision rate: 0.02, nav time: 9.43, total reward: 0.3676)
+2022-04-29 12:37:40, INFO: Frequency of being in danger: 0.05 and average min separate distance in danger: 0.16
+2022-04-29 12:37:40, INFO: Collision cases: 18
+2022-04-29 12:37:40, INFO: Timeout cases: 
+2022-04-29 12:37:40, INFO: results_path: data/output_sarl_bl1/eval/results.csv

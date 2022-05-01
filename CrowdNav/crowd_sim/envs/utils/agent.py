@@ -25,7 +25,6 @@ class Agent(object):
             chosen = get_random_policy()
             # ADAM: instanciated ORCA, SF, ..., class with no args
             self.policy = policy_factory[chosen]()
-
         # ADAM: fixed policy
         else:
             self.policy = policy_factory[config.get(section, 'policy')]()

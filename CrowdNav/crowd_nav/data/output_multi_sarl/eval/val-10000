@@ -1,0 +1,17 @@
+(venv) sigal@avanaa:~/Documents/2022-meng/sarl-train/CrowdNav/crowd_nav$ python test.py --policy sarl --model_dir data/output_multi_bl1 --env_config configs/env_multi_bl.config --phase val --gpu
+2022-04-29 11:44:46, INFO: Using device: cuda:0
+2022-04-29 11:44:46, INFO: Policy: SARL w/ global state
+2022-04-29 11:44:46, INFO: Env config file: configs/env_multi_bl.config
+/home/sigal/Documents/2022-meng/sarl-train/venv/lib/python3.6/site-packages/gym/envs/registration.py:14: PkgResourcesDeprecationWarning: Parameters to load are deprecated.  Call .resolve and .require separately.
+  result = entry_point.load(False)
+2022-04-29 11:44:46, INFO: human number: 5
+2022-04-29 11:44:46, INFO: Randomizing human radius and preferred speed
+2022-04-29 11:44:46, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2022-04-29 11:44:46, INFO: Square width: 10.0, circle width: 4.0
+2022-04-29 11:44:48, INFO: Agent is visible and has holonomic kinematic constraint
+2022-04-29 11:53:01, INFO: VAL   has success rate: 0.99, collision rate: 0.01, nav time: 9.60, total reward: 0.3677)
+2022-04-29 11:53:01, INFO: Frequency of being in danger: 0.03 and average min separate distance in danger: 0.15
+2022-04-29 11:53:01, INFO: Collision cases: 10
+2022-04-29 11:53:01, INFO: Timeout cases: 
+2022-04-29 11:53:01, INFO: results_path: data/output_multi_bl1/eval/results.csv
+

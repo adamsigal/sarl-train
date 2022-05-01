@@ -1,0 +1,15 @@
+2022-04-30 10:49:27, INFO: Using device: cuda:0
+2022-04-30 10:49:27, INFO: Policy: SARL w/ global state
+2022-04-30 10:49:27, INFO: Env config file: configs/env.config
+/home/sigal/Documents/2022-meng/sarl-train/venv/lib/python3.6/site-packages/gym/envs/registration.py:14: PkgResourcesDeprecationWarning: Parameters to load are deprecated.  Call .resolve and .require separately.
+  result = entry_point.load(False)
+2022-04-30 10:49:27, INFO: human number: 5
+2022-04-30 10:49:27, INFO: Not randomizing human radius and preferred speed
+2022-04-30 10:49:27, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2022-04-30 10:49:27, INFO: Square width: 10.0, circle width: 4.0
+2022-04-30 10:49:29, INFO: Agent is visible and has holonomic kinematic constraint
+2022-04-30 10:56:28, INFO: TEST  has success rate: 0.98, collision rate: 0.02, nav time: 10.13, total reward: 0.3383)
+2022-04-30 10:56:28, INFO: Frequency of being in danger: 0.04 and average min separate distance in danger: 0.14
+2022-04-30 10:56:28, INFO: Collision cases: 77 86
+2022-04-30 10:56:28, INFO: Timeout cases: 
+2022-04-30 10:56:28, INFO: results_path: data/output_multi_bl1/eval/results-orca.csv
