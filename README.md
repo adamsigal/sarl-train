@@ -13,38 +13,50 @@ Modifications and additions were made to almost every file and folder in `CrowdN
 <img src="https://i.imgur.com/YOPHXD1.png" width="1000" />
 
 ## Setup
-1. It the following code is based on Python 3.6. It is recommended to create a virtualenv. The following script *should* work, but I have only tested it on my own machine.
+The code in this repository is based on Python 3.6. It is recommended to create a virtualenv. The following steps should work, but I have only tested it on my own machine (Ubuntu 20.04).
+
+1. Download python 3.6 and the corresponding `pip` and `virtualenv` releases if your distribution does not have them already.
 ```
-chmod +x setup.sh #make file executable
-./setup.sh
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt-get install python3.6 python3.6-dev python3.6-venv
+sudo python3.6 -m pip install virtualenv
 ```
-2. Activate venv.
+
+2. Navigate to repository and activate venv.
 ```
+cd /path/to/sarl-train/
+virtualenv --python=/usr/bin/python3.6 venv
 source venv/bin/activate
 ```
-3. Install requirements.
+
+3. Install RVO2 (ORCA). If you run into problems, refer to the [repo](https://github.com/sybrenstuvel/Python-RVO2).
 ```
-cd pip install -r requirements.txt
+cd Python-RVO2/
+pip install -r requirements.txt
+python setup.py build
+python setup.py install
+```
+
+4. Install CrowdNav.
+```
+cd .. # navigate back to main sarl-train directory
+pip install -r requirements.txt
+cd CrowdNav
+yes | pip install -e .
 ```
 
 This should work, but it is possible for issues to arise. If you are unable get it working, please email me.
 
-4. In terminal, navigate to the local repo `sarl-train`
-5. Install crowd_sim and crowd_nav into pip
-```
-cd CrowdNav
-pip install -e .
-```
 
 ## Getting Started
 This repository is organized in two parts: CrowdNav/crowd_sim/ folder contains the simulation environment and
-CrowdNav/crowd_nav/ folder contains codes for training and testing the policies. Details of the simulation framework can be found [here](CrowdNav/crowd_sim/README.md). Below are the instructions for training and testing policies, and they should be executed inside the crowd_nav/ folder.
+CrowdNav/crowd_nav/ folder contains codes for training and testing the policies. Details of the simulation framework can be found [here](CrowdNav/crowd_sim/README.md). Below are the instructions for training and testing policies, and they should be executed inside the crowd_nav/ folder. Note that in this repo 3 pretrained models are included: LM-SARL, Multi-SARL, and Transfer-SARL
 
-Navigate to the crowd_nav folder.
+From the main `sarl-train` directory, navigate to the crowd_nav folder.
 ```
 cd CrowdNav/crowd_nav/
 ```
-
 
 Optional: Train a policy in a diverse environment (will take 10+ hours).
 ```
