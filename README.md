@@ -53,7 +53,7 @@ This should work, but it is possible for issues to arise. If you are unable get 
 This repository is organized in two parts: CrowdNav/crowd_sim/ folder contains the simulation environment and
 CrowdNav/crowd_nav/ folder contains codes for training and testing the policies. Details of the simulation framework can be found [here](CrowdNav/crowd_sim/README.md). Below are the instructions for training and testing policies, and they should be executed inside the crowd_nav/ folder. Note that in this repo 3 pretrained models are included: LM-SARL, Multi-SARL, and Transfer-SARL
 
-From the main `sarl-train` directory, navigate to the crowd_nav folder.
+From the **main `sarl-train` directory**, navigate to the crowd_nav folder.
 ```
 cd CrowdNav/crowd_nav/
 ```
@@ -65,7 +65,7 @@ python train.py --policy sarl --env_config configs/env_multi-test_bl-cr.config
 
 Test policies over 50 test episodes with pretrained models.
 ```
-python test.py --policy orca --phase test --env_config configs/bl-sq
+python test.py --policy orca --phase test --env_config configs/env_multi-test_bl-sq.config
 python test.py --policy sarl --model_dir data/output_transfer_sarl --phase test --env_config configs/env_multi-test_dn-sq.config
 ```
 Run a pretrained model for one episode and visualize the result.
@@ -73,7 +73,7 @@ Run a pretrained model for one episode and visualize the result.
 python test.py --policy sarl --model_dir data/output_lm_sarl --phase test --env_config configs/env_multi-test_lg-cr.config --visualize --test_case 0
 python test.py --policy sarl --model_dir data/output_multi_sarl --phase test --env_config configs/env_multi-test_lg-sq.config --visualize --test_case 0
 ```
-Plot the training curves of LM-SARL, Multi-SARL, and Transfer-SARL.
+Plot the training curves of the pretrained models: LM-SARL, Multi-SARL, and Transfer-SARL.
 ```
 python utils/plot.py data/output_lm_sarl/output.log data/output_multi_sarl/output.log data/output_transfer_sarl/output.log
 ```
