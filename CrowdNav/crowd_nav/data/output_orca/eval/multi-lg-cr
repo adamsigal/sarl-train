@@ -1,0 +1,17 @@
+2022-04-27 20:47:32, INFO: Using device: cpu
+/home/sigal/Documents/2022-meng/sarl-train/venv/lib/python3.6/site-packages/gym/envs/registration.py:14: PkgResourcesDeprecationWarning: Parameters to load are deprecated.  Call .resolve and .require separately.
+  result = entry_point.load(False)
+2022-04-27 20:47:32, INFO: human number: 12
+2022-04-27 20:47:32, INFO: Randomizing human radius and preferred speed
+2022-04-27 20:47:32, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2022-04-27 20:47:32, INFO: Square width: 14.0, circle width: 6.0
+2022-04-27 20:47:32, INFO: ORCA robot agent buffer: 0.000000
+2022-04-27 20:47:32, INFO: Agent is visible and has holonomic kinematic constraint
+2022-04-27 20:47:34, INFO: TEST  has success rate: 0.40, collision rate: 0.60, nav time: 13.97 (std: 1.48), total reward: -0.0343 (std: 0.1710)
+2022-04-27 20:47:34, INFO: Frequency of being in danger: 0.22 and average min separate distance in danger: 0.10 (std: 0.05)
+2022-04-27 20:47:34, INFO: Collision cases: 1 3 6 8 9 10 12 13 14 15 18 22 25 26 27 29 30 31 32 33 34 36 37 38 41 42 43 45 46 47
+2022-04-27 20:47:34, INFO: Timeout cases: 
+2022-04-27 20:47:34, INFO: results_path: data/output_orca/eval/results.csv
+
+env_config_file: configs/env_multi-test_lg-cr.config 
+
