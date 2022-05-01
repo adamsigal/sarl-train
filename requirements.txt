@@ -4,4 +4,4 @@ matplotlib==3.3.4
 numpy==1.19.5
 setuptools==59.6.0
 torch==1.10.2+cu113
-pyqt5=5.15.6
+pyqt5==5.15.6
