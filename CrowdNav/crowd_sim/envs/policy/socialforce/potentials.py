@@ -55,27 +55,21 @@ class PedPedPotential(object):
 
         # norm of each distance vector: (n, n)
         r_ab_norm = np.linalg.norm(rab, axis=2)
-        #print("\nr_ab_norm:", r_ab_norm.shape, "\n", r_ab_norm, "\n")
 
         # norm matrix above repeated so that we can do element wise division: (n,n,2)
         r_ab_norm_rep = np.repeat(r_ab_norm[:, :, np.newaxis], 2, axis=2)
-        #print("\nr_ab_norm_rep:", r_ab_norm_rep.shape, "\n", r_ab_norm_rep, "\n")
 
         # division by norm to get unit vectors: (n,n,2) ; note here we say div. by 0 = 0
         r_ab_unit = np.divide(rab, r_ab_norm_rep, out=np.zeros_like(rab), where=r_ab_norm_rep!=0)
-        #print("\nr_ab_unit:", r_ab_unit.shape, "\n", r_ab_unit, "\n")
 
         # subtract 1m from all distance magnitudes
         dist_minus_radius = r_ab_norm_rep - 1.0
-        #print("\ndist_minus_radius:", dist_minus_radius.shape, "\n", dist_minus_radius, "\n")
 
         # where the magnitude becomes negative, we say it is almost zero (to avoid div. by 0)
         new_norm = np.where(dist_minus_radius <= 0, 1e-5, dist_minus_radius)
-        #print("\nnew_norm:", new_norm.shape, "\n", new_norm, "\n")
 
         # multiply the new magnitudes (norms) by their unit vectors
         r_ab_new = r_ab_unit * new_norm
-        #print("\nr_ab_new:", r_ab_new.shape, "\n", r_ab_new, "\n")
         return r_ab_new
 
     def __call__(self, state):

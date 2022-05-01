@@ -10,7 +10,6 @@ import numpy as np
 from .potentials import PedPedPotential
 from .fieldofview import FieldOfView
 from . import stateutils
-#from crowd_sim.envs.utils.agent import Agent
 
 MAX_SPEED_MULTIPLIER = 1.3  # with respect to initial speed
 
@@ -50,12 +49,9 @@ class Simulator(object):
             # if tau is a float, not an ndarray
             if not hasattr(tau, 'shape'):
                 if tau is None:
-                    #tau = np.random.rand(self.state.shape[0])
-                    # XXX: TAU IS NOW SET TO 0 BY DEFAULT
                     tau = self.delta_t * np.ones(self.state.shape[0])
                 else:
                     tau = tau * np.ones(self.state.shape[0])
-                #print("New tau:", tau)
             self.state = np.concatenate((self.state, np.expand_dims(tau, -1)), axis=-1)
 
         # potentials
@@ -111,7 +107,7 @@ class Simulator(object):
         # social force
         F = F0 + np.sum(F_ab, axis=1) + np.sum(F_aB, axis=1)
 
-        # desired velocity (#humans, 2)
+        # desired velocity (num. humans, 2)
         #       current velocities   time        overall force = velocity (i guess)
         w = self.state[:, 2:4] + self.delta_t * F #* 5
 

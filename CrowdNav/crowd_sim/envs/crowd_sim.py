@@ -119,7 +119,6 @@ class CrowdSim(gym.Env):
                 self.sf_human_states = []
                 self.sf_v_prefs = []
 
-            #for i in range(human_num):
             fail = False
             # XXX: HUMAN GENERATION
             while len(self.humans) < human_num:
@@ -144,7 +143,6 @@ class CrowdSim(gym.Env):
                 self.sf_human_states = []
                 self.sf_v_prefs = []
 
-            #for i in range(human_num):
             fail = False
             while len(self.humans) < human_num:
                 # restart human generation bc it found a stalemate config
@@ -155,8 +153,6 @@ class CrowdSim(gym.Env):
                         self.sf_human_states = []
                         self.sf_v_prefs = []
 
-                # XXX: HUMAN GENERATION
-                # ADAM: problem is here
                 human, fail = self.generate_circle_crossing_human()
                 self.humans.append(human)
                 if self.sf:
@@ -164,7 +160,6 @@ class CrowdSim(gym.Env):
                     self.sf_human_states.append(sf_state)
                     self.sf_v_prefs.append(v_pref)
 
-        # ADAM: NEVER USED; DON'T GET THE POINT
         elif rule == 'mixed':
             # mix different training simulation with certain distribution
             static_human_num = {0: 0.05, 1: 0.2, 2: 0.2, 3: 0.3, 4: 0.1, 5: 0.15}
@@ -174,7 +169,6 @@ class CrowdSim(gym.Env):
 
             # 80% chance we take vals from dynamic_human_num
             # accomplishes that we have a decreasing probability to have more humans, with a max of 5
-            #   I honestly have no idea what the point of this is.
             for key, value in sorted(static_human_num.items() if static else dynamic_human_num.items()):
                 # if prob <= value, break from loop
                 if prob - value <= 0:
@@ -226,10 +220,8 @@ class CrowdSim(gym.Env):
 
 
     def generate_circle_crossing_human(self):
-        # ADAM: multi policy now supported.
         human = Human(self.config, 'humans')
 
-        # TODO: currently only randomizes vel. and radius. Maybe tau as well?
         if self.randomize_attributes:
             # v_pref: between [0.5, 1.5]
             # radius: between [0.3, 0.5]
@@ -311,8 +303,6 @@ class CrowdSim(gym.Env):
         logging.debug(f'Square counter: {max(ctr1, ctr2)}')
         fail = (ctr1 >= attempt_limit) or (ctr2 >= attempt_limit)
 
-        # TODO: MAKE HUMAN GOALS MORE INTERESTING
-        #       - goals are currently simply opposite side of circle
         #set(self,    px, py,  gx,  gy, vx, vy, theta, radius=None, v_pref=None):
         if isinstance(human.policy, SF):
             # for sf, vx & vy must be initiated at v_pref
@@ -320,13 +310,9 @@ class CrowdSim(gym.Env):
             #print('\ndirection:', direction)
             vx, vy = direction*human.v_pref#*0.5
             theta = np.arctan2(py, px)
-            # print('px:', px, ", py:", py)
-            # print('vx:', vx, ", vy:", vy)
-            # print('theta:', theta, "\n")
         else:
             vx, vy, theta = 0, 0, 0
         human.set(px, py, gx, gy, vx, vy, theta)
-        #human.set(px, py, gx, gy, 0, 0, 0)
         return human, fail
 
     def get_human_times(self):
@@ -460,11 +446,6 @@ class CrowdSim(gym.Env):
         Compute actions for all agents, detect collision, update environment and return (ob, reward, done, info)
 
         """
-        # TODO: compute all socialforce steps
-
-        #TODO: CREATE SIMULATOR OBJECT
-        #params = self.neighbor_dist, self.max_neighbors, , self.time_horizon_obst
-        #v0_init = np.random.normal(1.34, 0.26, size=(2))
         if self.sf:
             assert(self.robot is not None)
             robot_sf_state, robot_v_pref = self.robot.get_full_sf_state()
@@ -473,11 +454,9 @@ class CrowdSim(gym.Env):
             if self.robot.visible:
                 init_state = np.array(self.sf_human_states + [robot_sf_state])
                 max_speeds = np.array(self.sf_v_prefs + [robot_v_pref])
-                #radii = np.array([h.radius for h in self.humans] + [robot.radius])
             else:
                 init_state = np.array(self.sf_human_states)
                 max_speeds = np.array(self.sf_v_prefs)
-                #radii = np.array([h.radius for h in self.humans])
 
             # if sf_sim not initialized
             if self.sf_sim is None:
@@ -549,17 +528,16 @@ class CrowdSim(gym.Env):
             elif closest_dist < dmin:
                 dmin = closest_dist
 
-        ## ADAM: TURNED OFF FOR NOW
-        ## collision detection between humans
-        #human_num = len(self.humans)
-        # for i in range(human_num):
-        #     for j in range(i + 1, human_num):
-        #         dx = self.humans[i].px - self.humans[j].px
-        #         dy = self.humans[i].py - self.humans[j].py
-        #         dist = (dx ** 2 + dy ** 2) ** (1 / 2) - self.humans[i].radius - self.humans[j].radius
-        #         if dist < 0:
-        #             # detect collision but don't take humans' collision into account
-        #             logging.debug('Collision happens between humans in step()')
+        # collision detection between humans
+        human_num = len(self.humans)
+        for i in range(human_num):
+            for j in range(i + 1, human_num):
+                dx = self.humans[i].px - self.humans[j].px
+                dy = self.humans[i].py - self.humans[j].py
+                dist = (dx ** 2 + dy ** 2) ** (1 / 2) - self.humans[i].radius - self.humans[j].radius
+                if dist < 0:
+                    # detect collision but don't take humans' collision into account
+                    logging.debug('Collision happens between humans in step()')
 
         # check if robot reaching the goal
         end_position = np.array(self.robot.compute_position(action, self.time_step))
@@ -713,16 +691,12 @@ class CrowdSim(gym.Env):
             plt.legend([robot], ['Robot'], fontsize=16)
             plt.show()
         elif mode == 'video':
-            #fig, ax = plt.subplots(figsize=(7, 7))
             ax.tick_params(labelsize=16)
-            #ax.set_xlim(-6, 6)
-            #ax.set_ylim(-6, 6)
             ax.set_xlabel('x(m)', fontsize=16)
             ax.set_ylabel('y(m)', fontsize=16)
 
             # add robot and its goal
             robot_positions = [state[0].position for state in self.states]
-            # ADAM: GOAL WAS PREVIOUSLY STATIC AT [0], [4]
             logging.debug(f'Goal: ({self.robot.gx},{self.robot.gy})')
             goal = mlines.Line2D([self.robot.gx], [self.robot.gy], color=goal_color, marker='*', linestyle='None', markersize=15, label='Goal')
             robot = plt.Circle(robot_positions[0], self.robot.radius, fill=True, color=robot_color)
@@ -750,12 +724,8 @@ class CrowdSim(gym.Env):
             # compute attention scores
             if (self.attention_weights is not None) and (not hide_attn):
                 attention_scores = [
-                    # ADAM: formerly (-5.5, 5, ...)
-                    # plt.text((-r+0.2), (r-0.3) - 0.3 * i, 'Human {}: {:.2f}'.format(i + 1, self.attention_weights[0][i]),
-                    #          fontsize=12) for i in range(len(self.humans))]
                     plt.text((-r+0.2), (r-0.3) - 0.3 * i, "$α_{" + str(i) + "}$: " + f"{self.attention_weights[0][i]:.2f}",
                              fontsize=12) for i in range(len(self.humans))]
-                    #attention_scores[i].set_text()
 
 
             # compute orientation in each step and use arrow to show the direction
@@ -801,7 +771,6 @@ class CrowdSim(gym.Env):
                     # ADAM: rewrite attention weights
                     if (self.attention_weights is not None) and (not hide_attn):
                         human.set_color(str(self.attention_weights[frame_num][i]))
-                        #attention_scores[i].set_text('human {}: {:.2f}'.format(i, self.attention_weights[frame_num][i]))
                         attention_scores[i].set_text("$α_{" + str(i) + "}$: " + f"{self.attention_weights[frame_num][i]:.2f}")
 
                 time.set_text('Time: {:.2f}'.format(frame_num * self.time_step))

@@ -37,9 +37,6 @@ def main():
         # if we have model_dir, but no results_dir
         if args.results_dir is None:
             args.results_dir = os.path.join(args.model_dir, 'eval')
-        ## XXX: I changed this; weird behaviour. Why wouldn't you look in specified config?
-        # env_config_file = os.path.join(args.model_dir, os.path.basename(args.env_config))
-        # policy_config_file = os.path.join(args.model_dir, os.path.basename(args.policy_config))
         if args.il:
             model_weights = os.path.join(args.model_dir, 'il_model.pth')
         else:
@@ -47,7 +44,6 @@ def main():
                 model_weights = os.path.join(args.model_dir, 'resumed_rl_model.pth')
             else:
                 model_weights = os.path.join(args.model_dir, 'rl_model.pth')
-    #else:
     # if outputting results file, create dir if it doesn't exist
     if args.results_dir is not None:
         if not os.path.exists(args.results_dir):
@@ -56,7 +52,6 @@ def main():
     policy_config_file = args.policy_config
 
     # configure logging and device
-    # ADAM                    logging.DEBUG
     logging.basicConfig(level=logging.INFO, format='%(asctime)s, %(levelname)s: %(message)s',
                         datefmt="%Y-%m-%d %H:%M:%S")
     device = torch.device("cuda:0" if torch.cuda.is_available() and args.gpu else "cpu")
@@ -104,7 +99,7 @@ def main():
     policy.set_env(env)
     robot.print_info()
     if args.visualize:
-        # XXX: get the environment set up
+        # XXX: gets the environment set up
         #       - Set px, py, gx, gy, vx, vy, theta for robot and humans
         # ob: observation
         ob = env.reset(args.phase, args.test_case)
@@ -128,10 +123,7 @@ def main():
         logging.info('It takes %.2f seconds to finish. Final status is %s', env.global_time, info)
         if robot.visible and info == 'reach goal':
             human_times = env.get_human_times()
-            # ADAM
-            #logging.info('Average time for humans to reach goal: %.2f', sum(human_times) / len(human_times))
             logging.info(f'Average time for humans to reach goal: {sum(human_times) / len(human_times):.2f} (std: {np.std(human_times)})')
-            #logging.info('                   Standard deviation: %.3f', np.std(human_times))
 
     # ADAM: RUNNING TESTING FOR K EPISODES
     else:

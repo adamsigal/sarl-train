@@ -87,8 +87,6 @@ def write_results(path, results, fuse_std=False, stringify=False):
         new.append(f'{results[7]:.2f}')
         # danger_d_min
         new.append(f'{results[8]:.2f} ± {results[9]:.2f}')
-        # d_min_overall
-        #new.append(f'{results[10]:.2f} ± {results[11]:.2f}')
 
         if not os.path.exists(path):
             with open(path, 'w', newline='') as f:

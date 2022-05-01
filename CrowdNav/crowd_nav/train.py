@@ -148,7 +148,6 @@ def main():
         robot.policy.set_epsilon(epsilon_end)
         explorer.run_k_episodes(100, 'train', update_memory=True, episode=0)
         logging.info('Experience set size: %d/%d', len(memory), memory.capacity)
-        # ADAM: TODO: MAKE THIS READ, NOT HARDCODED!
     else:
         episode = 0
     while episode < train_episodes:
