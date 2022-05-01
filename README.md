@@ -86,12 +86,12 @@ Baseline Circle Crossing             | Baseline Square Crossing
 **Large Circle Crossing**             | **Large Square Crossing**
 <img src="https://i.imgur.com/Rh88H52.gif" width="400" />|<img src="https://i.imgur.com/ensprho.gif" width="400" />
 **Dense Circle Crossing**             | **Dense Square Crossing**
-<img src="https://i.imgur.com/SfKSlXZ.gif" width="400" />|<img src="https://i.imgur.com/d7l7rNI.gif" width="400" />  |  
+<img src="https://i.imgur.com/SfKSlXZ.gif" width="400" />|<img src="https://i.imgur.com/D4453gj.gif" width="400" />  |  
 
 ## Collision Case in Dense Square Crossing
 LM-SARL (Collision)             | Transfer-SARL (Avoids Collision)
 :-------------------------:|:-------------------------:
-<img src="https://i.imgur.com/4AvnPd1.gif" width="400" />|<img src="https://i.imgur.com/zwRfDBB.gif" width="400" />
+<img src="https://i.imgur.com/4AvnPd1.gif" width="400" />|<img src="https://i.imgur.com/d7l7rNI.gif" width="400" />
 
 ## Learning Curve
 Learning curve comparison between different methods.
