@@ -34,10 +34,13 @@ def main():
         if key == 'y' and not args.resume:
             shutil.rmtree(args.output_dir)
         else:
+            if args.resume:
+                print("No new directory created.")
             make_new_dir = False
             args.env_config = os.path.join(args.output_dir, os.path.basename(args.env_config))
             args.policy_config = os.path.join(args.output_dir, os.path.basename(args.policy_config))
             args.train_config = os.path.join(args.output_dir, os.path.basename(args.train_config))
+
     if make_new_dir:
         os.makedirs(args.output_dir)
         os.makedirs(os.path.join(args.output_dir, 'eval'))
@@ -111,7 +114,7 @@ def main():
             logging.error('RL weights does not exist')
         model.load_state_dict(torch.load(rl_weight_file))
         rl_weight_file = os.path.join(args.output_dir, 'resumed_rl_model.pth')
-        logging.info('Load reinforcement learning trained weights. Resume training')
+        logging.info('Loaded reinforcement learning trained weights. Resuming training')
     elif os.path.exists(il_weight_file):
         model.load_state_dict(torch.load(il_weight_file))
         logging.info('Load imitation learning trained weights.')
