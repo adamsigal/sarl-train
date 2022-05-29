@@ -440,7 +440,7 @@ class CrowdSim(gym.Env):
     def onestep_lookahead(self, action):
         return self.step(action, update=False)
 
-    def step(self, action, update=True, imitation_learning=False):
+    def step(self, action, update=True):
         """
         Compute actions for all agents, detect collision, update environment and return (ob, reward, done, info)
 
@@ -479,7 +479,11 @@ class CrowdSim(gym.Env):
             else:
                 sf_next_human_states = self.sf_sim.step().state
 
-            if not imitation_learning:
+            # multiagent_training overrides any specified number of humans to be *1*
+            if self.robot.policy.multiagent_training:
+                if sf_next_human_states.shape[0] != self.human_num:
+                    logging.info(f"sf_next_human_states.shape: {sf_next_human_states.shape}")
+                    logging.info(f"self.human_num: {self.human_num}")
                 assert(sf_next_human_states.shape[0] == self.human_num)
 
         # XXX: get human actions -- order seems to be fine in this loop
