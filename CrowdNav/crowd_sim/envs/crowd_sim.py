@@ -218,7 +218,6 @@ class CrowdSim(gym.Env):
         else:
             raise ValueError("Rule doesn't exist")
 
-
     def generate_circle_crossing_human(self):
         human = Human(self.config, 'humans')
 
@@ -252,8 +251,8 @@ class CrowdSim(gym.Env):
                 break
         if ctr >= 1500:
             fail = True
-            logging.debug(f'Too many attempts at placing human. Retrying from the start.')
-            logging.debug(f'Attempt counter: {ctr}')
+            #logging.debug(f'Too many attempts at placing human. Retrying from the start.')
+            #logging.debug(f'Attempt counter: {ctr}')
         #set(self,    px, py,  gx,  gy, vx, vy, theta, radius=None, v_pref=None):
         if isinstance(human.policy, SF):
             # for sf, vx & vy must be initiated at v_pref
@@ -300,7 +299,7 @@ class CrowdSim(gym.Env):
                     break
             if not collide:
                 break
-        logging.debug(f'Square counter: {max(ctr1, ctr2)}')
+        #logging.debug(f'Square counter: {max(ctr1, ctr2)}')
         fail = (ctr1 >= attempt_limit) or (ctr2 >= attempt_limit)
 
         #set(self,    px, py,  gx,  gy, vx, vy, theta, radius=None, v_pref=None):
@@ -441,7 +440,7 @@ class CrowdSim(gym.Env):
     def onestep_lookahead(self, action):
         return self.step(action, update=False)
 
-    def step(self, action, update=True):
+    def step(self, action, update=True, imitation_learning=False):
         """
         Compute actions for all agents, detect collision, update environment and return (ob, reward, done, info)
 
@@ -475,12 +474,13 @@ class CrowdSim(gym.Env):
                 self.sf_sim.set_state(init_state)
 
             # XXX: TAKE ONE SF STEP!
-            if self.robot.visible: #                             -1 to remove robot
+            if self.robot.visible: #                             -1 to remove robot from *HUMAN* state list
                 sf_next_human_states = self.sf_sim.step().state[:-1]
             else:
                 sf_next_human_states = self.sf_sim.step().state
 
-            assert(sf_next_human_states.shape[0] == self.human_num)
+            if not imitation_learning:
+                assert(sf_next_human_states.shape[0] == self.human_num)
 
         # XXX: get human actions -- order seems to be fine in this loop
         human_actions = []

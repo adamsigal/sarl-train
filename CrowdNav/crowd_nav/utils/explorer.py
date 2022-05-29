@@ -43,10 +43,10 @@ class Explorer(object):
             states = []
             actions = []
             rewards = []
-            logging.debug(f'i: {i}')
+            #logging.debug(f'i: {i}')
             while not done:
                 action = self.robot.act(ob)
-                ob, reward, done, info = self.env.step(action)
+                ob, reward, done, info = self.env.step(action, imitation_learning=imitation_learning)
                 states.append(self.robot.policy.last_state)
                 actions.append(action)
                 rewards.append(reward)
