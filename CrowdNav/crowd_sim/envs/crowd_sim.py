@@ -218,6 +218,8 @@ class CrowdSim(gym.Env):
         else:
             raise ValueError("Rule doesn't exist")
 
+
+
     def generate_circle_crossing_human(self):
         human = Human(self.config, 'humans')
 
