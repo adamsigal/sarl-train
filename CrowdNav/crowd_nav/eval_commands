@@ -1,0 +1,138 @@
+python train.py --policy sarl --output_dir data/output_sarl_bl1 --gpu
+
+
+python test.py --policy sarl --model_dir data/output_transfer_bl1 --env_config configs/env_multi_bl.config --phase val --gpu
+
+getting last val:
+X transfer
+X multi
+- sarl
+
+
+configs:
+env_multi-test_bl-cr.config
+env_multi-test_bl-sq.config
+
+env_multi-test_dn-cr.config
+env_multi-test_dn-sq.config
+
+env_multi-test_lg-cr.config
+env_multi-test_lg-sq.config
+
+
+
+Eval Outputs:
+ > data/output_multi_bl1/eval/multi-bl-cr
+ > data/output_multi_bl1/eval/multi-bl-sq
+ > data/output_multi_bl1/eval/multi-dn-cr
+ > data/output_multi_bl1/eval/multi-dn-sq
+ > data/output_multi_bl1/eval/multi-lg-cr
+ > data/output_multi_bl1/eval/multi-lg-sq
+
+
+ > data/output_sarl_bl_vis/eval/multi-bl-cr
+ > data/output_sarl_bl_vis/eval/multi-bl-sq
+ > data/output_sarl_bl_vis/eval/multi-dn-cr
+ > data/output_sarl_bl_vis/eval/multi-dn-sq
+ > data/output_sarl_bl_vis/eval/multi-lg-cr
+ > data/output_sarl_bl_vis/eval/multi-lg-sq
+
+
+
+Commands:
+Multi-sarl:
+
+python test.py --policy sarl --phase test --model_dir data/output_multi_bl1 --env_config configs/env_multi-test_bl-cr.config 2>&1 | tee data/output_multi_bl1/eval/multi-bl-cr
+python test.py --policy sarl --phase test --model_dir data/output_multi_bl1 --env_config configs/env_multi-test_bl-sq.config 2>&1 | tee data/output_multi_bl1/eval/multi-bl-sq
+
+python test.py --policy sarl --phase test --model_dir data/output_multi_bl1 --env_config configs/env_multi-test_dn-cr.config 2>&1 | tee data/output_multi_bl1/eval/multi-dn-cr
+python test.py --policy sarl --phase test --model_dir data/output_multi_bl1 --env_config configs/env_multi-test_dn-sq.config 2>&1 | tee data/output_multi_bl1/eval/multi-dn-sq
+
+python test.py --policy sarl --phase test --model_dir data/output_multi_bl1 --env_config configs/env_multi-test_lg-cr.config 2>&1 | tee data/output_multi_bl1/eval/multi-lg-cr
+python test.py --policy sarl --phase test --model_dir data/output_multi_bl1 --env_config configs/env_multi-test_lg-sq.config 2>&1 | tee data/output_multi_bl1/eval/multi-lg-sq
+
+
+echo '' | at -q b now
+
+==============================================================================
+Transfer-SARL:
+
+python test.py --policy sarl --phase test --model_dir data/output_transfer_bl1 --env_config configs/env_multi-test_bl-cr.config --gpu 2>&1 | tee data/output_transfer_bl1/eval/multi-bl-cr
+python test.py --policy sarl --phase test --model_dir data/output_transfer_bl1 --env_config configs/env_multi-test_bl-sq.config --gpu 2>&1 | tee data/output_transfer_bl1/eval/multi-bl-sq
+
+python test.py --policy sarl --phase test --model_dir data/output_transfer_bl1 --env_config configs/env_multi-test_dn-cr.config --gpu 2>&1 | tee data/output_transfer_bl1/eval/multi-dn-cr
+python test.py --policy sarl --phase test --model_dir data/output_transfer_bl1 --env_config configs/env_multi-test_dn-sq.config --gpu 2>&1 | tee data/output_transfer_bl1/eval/multi-dn-sq
+
+python test.py --policy sarl --phase test --model_dir data/output_transfer_bl1 --env_config configs/env_multi-test_lg-cr.config --gpu 2>&1 | tee data/output_transfer_bl1/eval/multi-lg-cr
+python test.py --policy sarl --phase test --model_dir data/output_transfer_bl1 --env_config configs/env_multi-test_lg-sq.config --gpu 2>&1 | tee data/output_transfer_bl1/eval/multi-lg-sq
+
+echo '' | at -q c now
+
+==============================================================================
+LM-SARL (new, with maybe all of the 10,000 epochs instead of 1200):
+
+python test.py --policy sarl --phase test --model_dir data/output_sarl_bl1 --env_config configs/env_multi-test_bl-cr.config 2>&1 | tee data/output_sarl_bl1/eval/multi-bl-cr
+python test.py --policy sarl --phase test --model_dir data/output_sarl_bl1 --env_config configs/env_multi-test_bl-sq.config 2>&1 | tee data/output_sarl_bl1/eval/multi-bl-sq
+
+python test.py --policy sarl --phase test --model_dir data/output_sarl_bl1 --env_config configs/env_multi-test_dn-cr.config 2>&1 | tee data/output_sarl_bl1/eval/multi-dn-cr
+python test.py --policy sarl --phase test --model_dir data/output_sarl_bl1 --env_config configs/env_multi-test_dn-sq.config 2>&1 | tee data/output_sarl_bl1/eval/multi-dn-sq
+
+python test.py --policy sarl --phase test --model_dir data/output_sarl_bl1 --env_config configs/env_multi-test_lg-cr.config 2>&1 | tee data/output_sarl_bl1/eval/multi-lg-cr
+python test.py --policy sarl --phase test --model_dir data/output_sarl_bl1 --env_config configs/env_multi-test_lg-sq.config 2>&1 | tee data/output_sarl_bl1/eval/multi-lg-sq
+
+===============================
+ORCA
+
+python test.py --policy orca --phase test --env_config configs/env_multi-test_bl-cr.config --results_dir data/output_orca/eval 2>&1 | tee data/output_orca/eval/multi-bl-cr
+python test.py --policy orca --phase test --env_config configs/env_multi-test_bl-sq.config --results_dir data/output_orca/eval 2>&1 | tee data/output_orca/eval/multi-bl-sq
+
+python test.py --policy orca --phase test --env_config configs/env_multi-test_dn-cr.config --results_dir data/output_orca/eval 2>&1 | tee data/output_orca/eval/multi-dn-cr
+python test.py --policy orca --phase test --env_config configs/env_multi-test_dn-sq.config --results_dir data/output_orca/eval 2>&1 | tee data/output_orca/eval/multi-dn-sq
+
+python test.py --policy orca --phase test --env_config configs/env_multi-test_lg-cr.config --results_dir data/output_orca/eval 2>&1 | tee data/output_orca/eval/multi-lg-cr
+python test.py --policy orca --phase test --env_config configs/env_multi-test_lg-sq.config --results_dir data/output_orca/eval 2>&1 | tee data/output_orca/eval/multi-lg-sq
+
+==============================
+TEST ON ORCA-ONLY
+
+python test.py --policy orca --phase test --env_config configs/env.config --results_dir data/output_orca/eval 2>&1 | tee data/output_orca/eval/orca-bl-cr
+
+echo 'python test.py --policy sarl --phase test --model_dir data/output_sarl_bl1 --env_config configs/env.config --gpu  2>&1  | tee data/output_sarl_bl1/eval/orca-bl-cr' | at -q b now
+
+echo 'python test.py --policy sarl --phase test --model_dir data/output_multi_bl1 --env_config configs/env.config  --gpu 2>&1  | tee data/output_multi_bl1/eval/orca-bl-cr' | at -q b now
+
+echo 'python test.py --policy sarl --phase test --model_dir data/output_transfer_bl1 --env_config configs/env.config --gpu 2>&1 | tee data/output_transfer_bl1/eval/orca-bl-cr' | at -q b now
+
+
+echo '
+' | at -q b now
+
+================================
+
+cd Documents/2022-meng/sarl-train/
+source venv/bin/activate
+cd CrowdNav/crowd_nav/
+
+
+================================
+
+python test.py --policy sarl --model_dir data/output_transfer_bl1 --phase test --visualize  --env_config configs/env_multi-test_dn-sq.config --test_case 0
+
+
+================================
+
+python test.py --policy sarl --phase test --model_dir data/output_multi_bl1 --env_config configs/env_multi-test_dn-cr.config 2>&1 | tee data/output_multi_bl1/eval/multi-dn-cr_v2
+
+SomeCommand 2>&1 | tee SomeFile.txt
+
+
+
+
+python test.py --policy sarl --model_dir data/output_multi_bl1 --phase test --visualize --test_case 0 --env_config configs/env_multi-test_bl-cr.config
+
+
+
+
+
+
+
