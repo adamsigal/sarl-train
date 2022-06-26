@@ -13,9 +13,9 @@ venv*/
 
 # data
 CrowdNav/data/
-CrowdNav/*.mp4
+**.mp4
 CrowdNav/videos/
-#CrowdNav/crowd_nav/data/*/*.pth
+CrowdNav/crowd_nav/data/**.pth
 
 #================================
 # Python-RVO2 ===================
