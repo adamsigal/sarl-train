@@ -130,6 +130,24 @@ SomeCommand 2>&1 | tee SomeFile.txt
 
 python test.py --policy sarl --model_dir data/output_multi_bl1 --phase test --visualize --test_case 0 --env_config configs/env_multi-test_bl-cr.config
 
+================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
