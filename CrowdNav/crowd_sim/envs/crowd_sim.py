@@ -13,6 +13,7 @@ from crowd_sim.envs.policy.socialforce import Simulator, PedPedPotential, stateu
 from crowd_sim.envs.policy.socialforce.fieldofview import FieldOfView
 from crowd_sim.envs.utils.action import ActionXY
 
+np.seterr(all='raise')
 
 class CrowdSim(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -400,7 +401,8 @@ class CrowdSim(gym.Env):
                               'val': 0, 'test': self.case_capacity['val']}
             self.robot.set(0, -self.circle_radius, 0, self.circle_radius, 0, 0, np.pi / 2)
             if self.case_counter[phase] >= 0:
-                np.random.seed(counter_offset[phase] + self.case_counter[phase])
+                # ADAM -- UNCOMMENT
+                #np.random.seed(counter_offset[phase] + self.case_counter[phase])
                 if phase in ['train', 'val']:
                     human_num = self.human_num if self.robot.policy.multiagent_training else 1
                     self.generate_random_human_position(human_num=human_num, rule=self.train_val_sim)
