@@ -55,7 +55,7 @@ This should work, but it is possible for issues to arise. If you are unable get 
 
 ## Getting Started
 This repository is organized in two parts: CrowdNav/crowd_sim/ folder contains the simulation environment and
-CrowdNav/crowd_nav/ folder contains codes for training and testing the policies. Details of the simulation framework can be found [here](CrowdNav/crowd_sim/README.md). Below are the instructions for training and testing policies, and they should be executed inside the crowd_nav/ folder. Note that in this repo 3 pretrained models are included: LM-SARL, Multi-SARL, and Transfer-SARL
+CrowdNav/crowd_nav/ folder contains codes for training and testing the policies. Details of the simulation framework can be found [here](CrowdNav/crowd_sim/README.md). Below are the instructions for training and testing policies, and they should be executed inside the crowd_nav/ folder. Note that in this repo 3 pretrained models are included: SARL (baseline), SARL (diverse), and SARL (curriculum+diverse)
 
 From the **main `sarl-train` directory**, navigate to the crowd_nav folder.
 ```
@@ -77,13 +77,13 @@ Run a pretrained model for one episode and visualize the result.
 python test.py --policy sarl --model_dir data/output_lm_sarl --phase test --env_config configs/env_multi-test_lg-cr.config --visualize --test_case 0
 python test.py --policy sarl --model_dir data/output_multi_sarl --phase test --env_config configs/env_multi-test_lg-sq.config --visualize --test_case 0
 ```
-Plot the training curves of the pretrained models: LM-SARL, Multi-SARL, and Transfer-SARL.
+Plot the training curves of the pretrained models: LM-SARL, SARL (diverse), and SARL (curriculum+diverse).
 ```
 python utils/plot.py data/output_lm_sarl/output.log data/output_multi_sarl/output.log data/output_transfer_sarl/output.log
 ```
 
 
-## Simulation Videos (Multi-SARL)
+## Simulation Videos (SARL (diverse))
 Baseline Circle Crossing             | Baseline Square Crossing
 :-------------------------:|:-------------------------:
 <img src="https://i.imgur.com/8Ru0I1u.gif" width="400" />|<img src="https://i.imgur.com/zwRfDBB.gif" width="400" />
@@ -93,7 +93,7 @@ Baseline Circle Crossing             | Baseline Square Crossing
 <img src="https://i.imgur.com/SfKSlXZ.gif" width="400" />|<img src="https://i.imgur.com/D4453gj.gif" width="400" />  |  
 
 ## Collision Case in Dense Square Crossing
-LM-SARL (Collision)             | Transfer-SARL (Avoids Collision)
+LM-SARL (Collision)             | SARL (curriculum+diverse) (Avoids Collision)
 :-------------------------:|:-------------------------:
 <img src="https://i.imgur.com/4AvnPd1.gif" width="400" />|<img src="https://i.imgur.com/d7l7rNI.gif" width="400" />
 
