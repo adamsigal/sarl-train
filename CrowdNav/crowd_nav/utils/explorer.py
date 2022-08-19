@@ -112,14 +112,14 @@ class Explorer(object):
 
 
         extra_info = '' if episode is None else 'in episode {} '.format(episode)
-        logging.info('{:<5} {}has success rate: {:.2f}, collision rate: {:.2f}, nav time: {:.2f}, total reward: {:.4f})'.
-                     format(phase.upper(), extra_info, success_rate, collision_rate, avg_nav_time,
+        logging.info('{:<5} {}has success rate: {:.2f}, collision rate: {:.2f}, nav time: {:.2f}±{:1f}, total reward: {:.4f})'.
+                     format(phase.upper(), extra_info, success_rate, collision_rate, avg_nav_time, std_nav_time,
                             average(cumulative_rewards)))
 
 
         if phase in ['val', 'test']:
             num_step = sum(success_times + collision_times + timeout_times) / self.robot.time_step
-            logging.info('Frequency of being in danger: %.2f and average min separate distance in danger: %.2f', too_close / num_step, average(min_dist))
+            logging.info('Frequency of being in danger: %.2f and average min separate distance in danger: %.2f±%.1f', too_close / num_step, average(min_dist), np.std(min_dist))
 
         # array of [env, succ, coll, time, std_time, rew, std_rew, disc_freq,
         #           danger_d_min, std_danger, d_min_overall, std_overall]
