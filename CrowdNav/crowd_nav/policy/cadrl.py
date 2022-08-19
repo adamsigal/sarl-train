@@ -7,6 +7,7 @@ from crowd_sim.envs.policy.policy import Policy
 from crowd_sim.envs.utils.action import ActionRot, ActionXY
 from crowd_sim.envs.utils.state import ObservableState, FullState
 
+np.seterr(all='raise')
 
 def mlp(input_dim, mlp_dims, last_relu=False):
     layers = []

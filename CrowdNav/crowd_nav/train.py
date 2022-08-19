@@ -13,6 +13,8 @@ from crowd_nav.utils.memory import ReplayMemory
 from crowd_nav.utils.explorer import Explorer
 from crowd_nav.policy.policy_factory import policy_factory
 
+import numpy as np
+np.seterr(all='raise')
 
 def main():
     parser = argparse.ArgumentParser('Parse configuration file')
@@ -146,14 +148,21 @@ def main():
     trainer.set_learning_rate(rl_learning_rate)
     # fill the memory pool with some RL experience
     if args.resume:
+        # MANUAL CURR: put back to 5000 for part 2
         episode = 5000
         logging.info(f'Resuming training at episode: {episode}')
+
         robot.policy.set_epsilon(epsilon_end)
         explorer.run_k_episodes(100, 'train', update_memory=True, episode=0)
         logging.info('Experience set size: %d/%d', len(memory), memory.capacity)
     else:
         episode = 0
     while episode < train_episodes:
+
+        # MANUAL CURR: remove for second part of curriculum
+        # if episode >= 5010:
+        #     raise Exception("We are doing a curriculum and have reached episode 5010 bc this is apparently how we do things now.")
+
         if args.resume:
             epsilon = epsilon_end
         else:
@@ -175,7 +184,10 @@ def main():
         if episode % target_update_interval == 0:
             explorer.update_target_model(model)
 
-        if episode != 0 and episode % checkpoint_interval == 0:
+        #if episode != 0 and episode % checkpoint_interval == 0:
+        # So that we can resume from episode 0
+        if episode == 1 or episode % checkpoint_interval == 0:
+            logging.info("Saving RL model weights.")
             torch.save(model.state_dict(), rl_weight_file)
 
     # final test

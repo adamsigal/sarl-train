@@ -7,6 +7,7 @@ import numpy as np
 import time
 import os
 
+np.seterr(all='raise')
 
 class Explorer(object):
     def __init__(self, env, robot, device, memory=None, gamma=None, target_policy=None):
@@ -97,7 +98,15 @@ class Explorer(object):
         assert success + collision + timeout == k
 
         avg_nav_time = sum(success_times) / len(success_times) if success_times else self.env.time_limit
-        std_nav_time = np.std(success_times)
+
+        # was checking why this wasn't working
+        # logging.debug(f"success times: {success_times}")
+        # Turns out, there might be *no* success times, so we condition:
+        if len(success_times) > 0:
+            std_nav_time = np.std(success_times)
+        else:
+            std_nav_time = 0
+
 
         std_cumul_rewards = np.std(cumulative_rewards)
 
